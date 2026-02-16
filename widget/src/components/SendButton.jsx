@@ -1,5 +1,3 @@
-// import React from 'react';
-/** @jsxImporrtSource react */
 export default function SendButton({ onClick, disabled }) {
   return (
     <button 

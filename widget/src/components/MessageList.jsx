@@ -1,4 +1,3 @@
-/** @jsxImporrtSource react */
 import { useEffect, useRef } from 'react';
 import Message from './Message';
 import TypingIndicator from './TypingIndicator';

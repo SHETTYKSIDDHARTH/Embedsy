@@ -1,4 +1,3 @@
-/** @jsxImporrtSource react */
 import { useState } from 'react';
 import ChatBubble from './components/ChatBubble';
 import ChatWindow from './components/ChatWindow';

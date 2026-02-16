@@ -4,9 +4,47 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Embedsy Widget Dev</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .dev-notice {
+      background: white;
+      border-radius: 12px;
+      padding: 32px 40px;
+      text-align: center;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      max-width: 400px;
+    }
+    .dev-notice h2 { margin: 0 0 8px; font-size: 20px; }
+    .dev-notice p  { margin: 0; color: #666; font-size: 14px; }
+    .dot { display: inline-block; width: 10px; height: 10px;
+           background: #00FF87; border-radius: 50%; margin-right: 8px;
+           animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  </style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="module" src="/src/index.jsx"></script>
+  <div class="dev-notice">
+    <h2><span class="dot"></span>Widget Dev Mode</h2>
+    <p>The chat bubble should appear in the <strong>bottom-right corner</strong>.</p>
+  </div>
+
+  <script type="module">
+    import initEmbedsy from '/src/index.jsx';
+
+    initEmbedsy({
+      projectId: 'cfc1a0f3-55db-431d-9a13-b61319c8d038',
+      apiKey: 'embedsy_dd10315d2dda4f458bc84fd40f3bff35',
+      title: 'Embedsy Assistant',
+      position: 'bottom-right'
+    });
+  </script>
 </body>
 </html>

@@ -1,5 +1,3 @@
-// import React from 'react';
-/** @jsxImporrtSource react */
 import Header from './Header';
 import MessageList from './MessageList';
 import InputBox from './InputBox';

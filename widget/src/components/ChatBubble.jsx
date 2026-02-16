@@ -1,4 +1,5 @@
-/** @jsxImporrtSource react */
+import React from 'react';
+
 function ChatBubble({ onClick, unreadCount = 0 }) {
   return (
     <button 

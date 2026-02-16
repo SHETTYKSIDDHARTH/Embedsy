@@ -272,12 +272,10 @@
   </footer>
 
   <!-- Embedsy Widget Integration -->
-  <script type="module">
-    // For development, load from local Vite server
-    import Embedsy from 'http://localhost:5173/src/index.jsx';
-    
-    // Initialize with your test project credentials
-    Embedsy.init({
+<script type="module">
+    import initEmbedsy from 'http://localhost:5173/src/index.jsx';
+
+    initEmbedsy({
       projectId: 'cfc1a0f3-55db-431d-9a13-b61319c8d038',
       apiKey: 'embedsy_dd10315d2dda4f458bc84fd40f3bff35',
       title: 'Embedsy Assistant',

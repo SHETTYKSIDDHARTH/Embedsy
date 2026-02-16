@@ -1,5 +1,3 @@
-
-/** @jsxImporrtSource react */
 import { useState, useRef, useEffect } from 'react';
 import SendButton from './SendButton';
 
