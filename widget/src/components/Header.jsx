@@ -1,5 +1,5 @@
-import React from 'react';
-
+// import React from 'react';
+/** @jsxImporrtSource react */
 export default function Header({ onClose, title = "Chat with us" }) {
   return (
     <div className="embedsy-chat-header">

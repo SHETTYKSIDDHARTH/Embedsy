@@ -1,5 +1,5 @@
-import React from 'react';
-
+// import React from 'react';
+/** @jsxImporrtSource react */
 export default function SourceCitation({ sources }) {
   if (!sources || sources.length === 0) return null;
 

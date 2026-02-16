@@ -1,6 +1,5 @@
-import React from 'react';
-
-export default function ChatBubble({ onClick, unreadCount = 0 }) {
+/** @jsxImporrtSource react */
+function ChatBubble({ onClick, unreadCount = 0 }) {
   return (
     <button 
       className="embedsy-chat-bubble"
@@ -44,3 +43,5 @@ export default function ChatBubble({ onClick, unreadCount = 0 }) {
     </button>
   );
 }
+
+export default ChatBubble;

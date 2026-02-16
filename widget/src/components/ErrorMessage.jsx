@@ -1,5 +1,5 @@
-import React from 'react';
-
+// import React from 'react';
+/** @jsxImporrtSource react */
 export default function ErrorMessage({ error, onRetry }) {
   if (!error) return null;
 
