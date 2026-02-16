@@ -8,7 +8,7 @@ export const storeEmbeddings = async (projectId, chunks, embeddings) => {
     const records = chunks.map((chunk, index) => ({
       project_id: projectId,
       chunk_text: chunk,
-      embedding: embeddings[index],
+      embedding: `[${embeddings[index].join(',')}]`,  // ✅ Convert to pgvector format
       metadata: { 
         index, 
         length: chunk.length,
@@ -39,8 +39,8 @@ export const searchSimilarChunks = async (projectId, queryEmbedding, topK = 5) =
     logger.info('Searching similar chunks', { projectId, topK });
     
     const { data, error } = await supabase.rpc('match_embeddings', {
-      query_embedding: queryEmbedding,
-      match_threshold: 0.5,
+      query_embedding: `[${queryEmbedding.join(',')}]`,  // ✅ Convert to pgvector format
+      match_threshold: 0.0,
       match_count: topK,
       project_id: projectId
     });
