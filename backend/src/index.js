@@ -1,78 +1,34 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './App';
+import express from 'express';
+import dotenv from 'dotenv';
+import { corsMiddleware } from './middleware/cors.js';
+import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
+import projectRoutes from './routes/projects.js';
+import documentRoutes from './routes/documents.js';
+import chatRoutes from './routes/chat.js';
+import { logger } from './utils/logger.js';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+dotenv.config();
 
-async function fetchProjectConfig(projectId) {
-  const res = await fetch(`${API_URL}/projects/${projectId}/widget-config`);
-  if (!res.ok) throw new Error('Invalid project');
-  return res.json();
-}
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-async function bootstrap() {
-  // Find our own script tag
-  const script =
-    document.currentScript ||
-    document.querySelector('script[data-project]');
+app.use(corsMiddleware);
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
 
-  if (!script) {
-    console.error('Embedsy: Could not find script tag with data-project attribute');
-    return;
-  }
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString(), version: '1.0.0' });
+});
 
-  const projectId = script.getAttribute('data-project');
-  const overrideTitle = script.getAttribute('data-title');
-  const overridePosition = script.getAttribute('data-position') || 'bottom-right';
+app.use('/api', projectRoutes);
+app.use('/api', documentRoutes);
+app.use('/api', chatRoutes);
 
-  if (!projectId) {
-    console.error('Embedsy: data-project attribute is required');
-    return;
-  }
+app.use(notFoundHandler);
+app.use(errorHandler);
 
-  let config;
-  try {
-    config = await fetchProjectConfig(projectId);
-  } catch (e) {
-    console.error('Embedsy: Failed to load project config', e.message);
-    return;
-  }
+app.listen(PORT, () => {
+  logger.info(`Embedsy backend running on port ${PORT}`);
+});
 
-  const containerId = `embedsy-root-${projectId}`;
-  let container = document.getElementById(containerId);
-  if (!container) {
-    container = document.createElement('div');
-    container.id = containerId;
-    document.body.appendChild(container);
-  }
-
-  createRoot(container).render(
-    <App
-      projectId={projectId}
-      apiKey={config.apiKey}
-      title={overrideTitle || config.title || 'Ask us anything!'}
-      position={overridePosition}
-      themeColor={config.themeColor || '#00FF87'}
-    />
-  );
-
-  console.log('✅ Embedsy initialized for project:', projectId);
-}
-
-// Also expose manual init for backwards compat
-window.Embedsy = {
-  init: ({ projectId, apiKey, title, position = 'bottom-right' }) => {
-    let container = document.getElementById('embedsy-widget-root');
-    if (!container) {
-      container = document.createElement('div');
-      container.id = 'embedsy-widget-root';
-      document.body.appendChild(container);
-    }
-    createRoot(container).render(
-      <App projectId={projectId} apiKey={apiKey} title={title} position={position} themeColor="#00FF87" />
-    );
-  },
-  version: '2.0.0',
-};
-
-bootstrap();
+export default app;

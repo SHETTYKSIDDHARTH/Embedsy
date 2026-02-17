@@ -2,53 +2,81 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 
-function injectStyles() {
-  // CSS is injected inline via the build — this handles dev mode fallback
-  if (document.getElementById('embedsy-styles')) return;
-  const link = document.createElement('link');
-  link.id = 'embedsy-styles';
-  link.rel = 'stylesheet';
-  // In production, style is inlined by Vite build plugin below
-  document.head.appendChild(link);
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
+async function fetchProjectConfig(projectId) {
+  const res = await fetch(`${API_URL}/projects/${projectId}/widget-config`);
+  if (!res.ok) throw new Error('Invalid project');
+  return res.json();
 }
 
-function initEmbedsy(config) {
-  const { projectId, apiKey, title, position, containerId } = config;
+async function bootstrap() {
+  const script =
+    document.currentScript ||
+    document.querySelector('script[data-project]');
+
+  if (!script) {
+    console.error('Embedsy: Could not find script tag with data-project attribute');
+    return;
+  }
+
+  const projectId = script.getAttribute('data-project');
+  const overrideTitle = script.getAttribute('data-title');
+  const overridePosition = script.getAttribute('data-position') || 'bottom-right';
 
   if (!projectId) {
-    console.error('Embedsy Error: projectId is required');
+    console.error('Embedsy: data-project attribute is required');
     return;
   }
 
-  if (!apiKey) {
-    console.error('Embedsy Error: apiKey is required');
+  let config;
+  try {
+    config = await fetchProjectConfig(projectId);
+  } catch (e) {
+    console.error('Embedsy: Failed to load project config', e.message);
     return;
   }
 
-  let container = document.getElementById(containerId || 'embedsy-widget-root');
-
+  const containerId = `embedsy-root-${projectId}`;
+  let container = document.getElementById(containerId);
   if (!container) {
     container = document.createElement('div');
-    container.id = containerId || 'embedsy-widget-root';
+    container.id = containerId;
     document.body.appendChild(container);
   }
 
-  const root = createRoot(container);
-
-  root.render(
+  createRoot(container).render(
     <App
       projectId={projectId}
-      apiKey={apiKey}
-      title={title}
-      position={position}
+      apiKey={config.apiKey}
+      title={overrideTitle || config.title || 'Ask us anything!'}
+      position={overridePosition}
+      themeColor={config.themeColor || '#00FF87'}
     />
   );
 
-  console.log('✅ Embedsy widget initialized successfully');
-  console.log('Project ID:', projectId);
+  console.log('✅ Embedsy initialized for project:', projectId);
 }
 
 window.Embedsy = {
-  init: initEmbedsy,
-  version: '1.0.0',
+  init: ({ projectId, apiKey, title, position = 'bottom-right', themeColor = '#00FF87' }) => {
+    let container = document.getElementById('embedsy-widget-root');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'embedsy-widget-root';
+      document.body.appendChild(container);
+    }
+    createRoot(container).render(
+      <App
+        projectId={projectId}
+        apiKey={apiKey}
+        title={title}
+        position={position}
+        themeColor={themeColor}
+      />
+    );
+  },
+  version: '2.0.0',
 };
+
+bootstrap();

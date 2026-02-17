@@ -1,0 +1,19 @@
+export const API_URL = import.meta.env.VITE_API_URL || '/api';
+
+export const ALLOWED_FILE_TYPES = [
+  'application/pdf',
+  'text/plain',
+  'text/markdown',
+];
+
+export const ALLOWED_FILE_EXTENSIONS = ['.pdf', '.txt', '.md'];
+
+export const MAX_FILE_SIZE_MB = 10;
+export const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
+export const POSITIONS = [
+  { value: 'bottom-right', label: 'Bottom Right' },
+  { value: 'bottom-left', label: 'Bottom Left' },
+];
+
+export const DEFAULT_THEME_COLOR = '#00FF87';

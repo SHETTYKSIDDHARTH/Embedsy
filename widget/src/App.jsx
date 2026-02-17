@@ -1,14 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ChatBubble from './components/ChatBubble';
 import ChatWindow from './components/ChatWindow';
 import { useMessages } from './hooks/useMessages';
 import { useChat } from './hooks/useChat';
 import './styles/widget.css';
 
-export default function App({ projectId, apiKey, title, position = 'bottom-right' }) {
+// FIX: themeColor was received but never applied anywhere
+export default function App({ projectId, apiKey, title, position = 'bottom-right', themeColor = '#00FF87' }) {
   const [isOpen, setIsOpen] = useState(false);
   const { messages, addMessage, clearAllMessages } = useMessages(projectId);
-  
+
+  // Inject themeColor as CSS variable so widget.css can use it
+  useEffect(() => {
+    const containerId = `embedsy-root-${projectId}`;
+    const container =
+      document.getElementById(containerId) ||
+      document.getElementById('embedsy-widget-root');
+    if (container) {
+      container.style.setProperty('--embedsy-theme', themeColor);
+    }
+  }, [themeColor, projectId]);
+
   const handleMessageReceived = (response) => {
     addMessage({
       role: 'bot',
@@ -19,20 +31,11 @@ export default function App({ projectId, apiKey, title, position = 'bottom-right
     });
   };
 
-  const { send, isLoading, error, clearError } = useChat(
-    projectId,
-    apiKey,
-    handleMessageReceived
-  );
+  const { send, isLoading, error, clearError } = useChat(projectId, apiKey, handleMessageReceived);
 
   const handleSend = async (message) => {
-    addMessage({
-      role: 'user',
-      content: message
-    });
-
+    addMessage({ role: 'user', content: message });
     clearError();
-
     try {
       await send(message);
     } catch (err) {
@@ -41,18 +44,11 @@ export default function App({ projectId, apiKey, title, position = 'bottom-right
   };
 
   const handleRetry = () => {
-    const lastUserMessage = [...messages]
-      .reverse()
-      .find(msg => msg.role === 'user');
-    
+    const lastUserMessage = [...messages].reverse().find(msg => msg.role === 'user');
     if (lastUserMessage) {
       clearError();
       send(lastUserMessage.content);
     }
-  };
-
-  const toggleChat = () => {
-    setIsOpen(!isOpen);
   };
 
   return (
@@ -63,12 +59,13 @@ export default function App({ projectId, apiKey, title, position = 'bottom-right
           isLoading={isLoading}
           error={error}
           onSend={handleSend}
-          onClose={toggleChat}
+          onClose={() => setIsOpen(false)}
           onRetry={handleRetry}
-          title={title || "Chat with us"}
+          onClear={clearAllMessages}
+          title={title || 'Chat with us'}
         />
       ) : (
-        <ChatBubble onClick={toggleChat} />
+        <ChatBubble onClick={() => setIsOpen(true)} />
       )}
     </div>
   );

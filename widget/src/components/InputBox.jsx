@@ -6,22 +6,19 @@ export default function InputBox({ onSend, disabled }) {
   const inputRef = useRef(null);
 
   useEffect(() => {
-    if (!disabled && inputRef.current) {
-      inputRef.current.focus();
-    }
+    if (!disabled && inputRef.current) inputRef.current.focus();
   }, [disabled]);
 
   const handleSubmit = () => {
     if (input.trim() && !disabled) {
       onSend(input.trim());
       setInput('');
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
+      if (inputRef.current) inputRef.current.focus();
     }
   };
 
-  const handleKeyPress = (e) => {
+  // FIX: onKeyPress is deprecated — replaced with onKeyDown
+  const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit();
@@ -37,7 +34,7 @@ export default function InputBox({ onSend, disabled }) {
         placeholder="Type your question here..."
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        onKeyPress={handleKeyPress}
+        onKeyDown={handleKeyDown}
         disabled={disabled}
         maxLength={2000}
       />

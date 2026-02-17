@@ -6,70 +6,57 @@ import { generateEmbeddings } from '../services/embedding.js';
 import { storeEmbeddings } from '../services/vectordb.js';
 import { validateFile } from '../utils/validators.js';
 import { logger } from '../utils/logger.js';
+import { supabase } from '../config/database.js'; // FIX: was missing
 
 const router = express.Router();
 
-const upload = multer({ 
+const upload = multer({
   storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 10 * 1024 * 1024
-  }
+  limits: { fileSize: 10 * 1024 * 1024 }
 });
 
 router.post('/projects/:projectId/upload', upload.single('file'), async (req, res) => {
   try {
     const { projectId } = req.params;
     const file = req.file;
-    
-    logger.info('Document upload started', { 
-      projectId, 
+
+    logger.info('Document upload started', {
+      projectId,
       filename: file?.originalname,
-      size: file?.size 
+      size: file?.size
     });
-    
+
     if (!file) {
-      return res.status(400).json({
-        success: false,
-        error: 'No file provided'
-      });
+      return res.status(400).json({ success: false, error: 'No file provided' });
     }
-    
+
     validateFile(file);
-    
+
     logger.info('Parsing document');
     const rawText = await parseDocument(file.buffer, file.mimetype);
-    
+
     if (!rawText || rawText.trim().length === 0) {
-      return res.status(400).json({
-        success: false,
-        error: 'Document contains no readable text'
-      });
+      return res.status(400).json({ success: false, error: 'Document contains no readable text' });
     }
-    
+
     const text = cleanText(rawText);
-    
     logger.info('Document parsed', { textLength: text.length });
-    
+
     const chunks = chunkText(text);
-    
+
     if (chunks.length === 0) {
-      return res.status(400).json({
-        success: false,
-        error: 'Document could not be properly chunked'
-      });
+      return res.status(400).json({ success: false, error: 'Document could not be properly chunked' });
     }
-    
+
     logger.info('Generating embeddings');
     const embeddings = await generateEmbeddings(chunks);
-    
+
     logger.info('Storing embeddings');
-    await storeEmbeddings(projectId, chunks, embeddings);
-    
-    logger.info('Document upload complete', { 
-      projectId, 
-      chunks: chunks.length 
-    });
-    
+    // FIX: pass filename so documents list works correctly
+    await storeEmbeddings(projectId, chunks, embeddings, file.originalname);
+
+    logger.info('Document upload complete', { projectId, chunks: chunks.length });
+
     res.json({
       success: true,
       message: 'Document processed successfully',
@@ -83,51 +70,60 @@ router.post('/projects/:projectId/upload', upload.single('file'), async (req, re
     });
   } catch (error) {
     logger.error('Document upload failed', error);
-    res.status(500).json({
-      success: false,
-      error: error.message || 'Failed to process document'
-    });
+    res.status(500).json({ success: false, error: error.message || 'Failed to process document' });
   }
 });
 
 router.get('/projects/:projectId/documents', async (req, res) => {
   try {
     const { projectId } = req.params;
-    
     logger.info('Fetching documents', { projectId });
-    
+
     const { data, error } = await supabase
       .from('embeddings')
       .select('id, chunk_text, metadata, created_at')
       .eq('project_id', projectId)
       .order('created_at', { ascending: false });
-    
+
     if (error) throw error;
-    
-    const groupedByFile = data.reduce((acc, item) => {
+
+    const groupedByFile = (data || []).reduce((acc, item) => {
       const filename = item.metadata?.filename || 'Unknown';
       if (!acc[filename]) {
-        acc[filename] = {
-          filename,
-          chunks: 0,
-          created_at: item.created_at
-        };
+        acc[filename] = { filename, chunks: 0, created_at: item.created_at };
       }
       acc[filename].chunks++;
       return acc;
     }, {});
-    
+
     res.json({
       success: true,
       documents: Object.values(groupedByFile),
-      totalChunks: data.length
+      totalChunks: (data || []).length
     });
   } catch (error) {
     logger.error('Get documents error', error);
-    res.status(500).json({
-      success: false,
-      error: error.message || 'Failed to fetch documents'
-    });
+    res.status(500).json({ success: false, error: error.message || 'Failed to fetch documents' });
+  }
+});
+
+router.delete('/projects/:projectId/documents/:filename', async (req, res) => {
+  try {
+    const { projectId, filename } = req.params;
+    const decodedFilename = decodeURIComponent(filename);
+
+    const { error } = await supabase
+      .from('embeddings')
+      .delete()
+      .eq('project_id', projectId)
+      .contains('metadata', { filename: decodedFilename });
+
+    if (error) throw error;
+
+    res.json({ success: true, message: 'Document deleted' });
+  } catch (error) {
+    logger.error('Delete document error', error);
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
