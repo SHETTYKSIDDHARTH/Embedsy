@@ -3,7 +3,10 @@ import { EMBEDDING_DIMENSION } from '../config/constants.js';
 
 export const generateEmbedding = async (text) => {
   try {
-    const words = text.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+    // Remove punctuation and split into words
+    const cleanText = text.toLowerCase().replace(/[^\w\s]/g, ' ');
+    const words = cleanText.split(/\s+/).filter(w => w.length > 2);
+    
     const embedding = new Array(EMBEDDING_DIMENSION).fill(0);
     
     words.forEach((word, index) => {
@@ -32,7 +35,9 @@ export const generateEmbedding = async (text) => {
 };
 
 export const generateEmbeddings = async (chunks) => {
-  logger.info('Generating embeddings', { chunkCount: chunks.length });
+  logger.info('Generating embeddings', { chunkCount: chunks.length })
+
+;
   
   const embeddings = [];
   
