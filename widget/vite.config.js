@@ -1,8 +1,15 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    cssInjectedByJsPlugin(),
+  ],
+  define: {
+    'process.env.NODE_ENV': '"production"',
+  },
   server: {
     port: 5173,
     cors: true,
@@ -14,7 +21,7 @@ export default defineConfig({
     outDir: 'dist',
     lib: {
       entry: 'src/index.jsx',
-      name: 'Embedsy',
+      name: 'EmbedsyLib',
       fileName: () => 'widget.js',
       formats: ['iife'],
     },

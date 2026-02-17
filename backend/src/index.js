@@ -1,79 +1,78 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import { corsMiddleware } from './middleware/cors.js';
-import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
-import projectsRouter from './routes/projects.js';
-import documentsRouter from './routes/documents.js';
-import chatRouter from './routes/chat.js';
-import { logger } from './utils/logger.js';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App';
 
-dotenv.config();
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+async function fetchProjectConfig(projectId) {
+  const res = await fetch(`${API_URL}/projects/${projectId}/widget-config`);
+  if (!res.ok) throw new Error('Invalid project');
+  return res.json();
+}
 
-app.use(corsMiddleware);
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+async function bootstrap() {
+  // Find our own script tag
+  const script =
+    document.currentScript ||
+    document.querySelector('script[data-project]');
 
-app.use((req, res, next) => {
-  logger.info(`${req.method} ${req.path}`, {
-    ip: req.ip,
-    userAgent: req.get('user-agent')
-  });
-  next();
-});
+  if (!script) {
+    console.error('Embedsy: Could not find script tag with data-project attribute');
+    return;
+  }
 
-app.get('/', (req, res) => {
-  res.json({ 
-    success: true, 
-    message: 'Embedsy API is running',
-    version: '1.0.0',
-    timestamp: new Date().toISOString(),
-    endpoints: {
-      projects: '/api/projects',
-      upload: '/api/projects/:id/upload',
-      chat: '/api/chat'
+  const projectId = script.getAttribute('data-project');
+  const overrideTitle = script.getAttribute('data-title');
+  const overridePosition = script.getAttribute('data-position') || 'bottom-right';
+
+  if (!projectId) {
+    console.error('Embedsy: data-project attribute is required');
+    return;
+  }
+
+  let config;
+  try {
+    config = await fetchProjectConfig(projectId);
+  } catch (e) {
+    console.error('Embedsy: Failed to load project config', e.message);
+    return;
+  }
+
+  const containerId = `embedsy-root-${projectId}`;
+  let container = document.getElementById(containerId);
+  if (!container) {
+    container = document.createElement('div');
+    container.id = containerId;
+    document.body.appendChild(container);
+  }
+
+  createRoot(container).render(
+    <App
+      projectId={projectId}
+      apiKey={config.apiKey}
+      title={overrideTitle || config.title || 'Ask us anything!'}
+      position={overridePosition}
+      themeColor={config.themeColor || '#00FF87'}
+    />
+  );
+
+  console.log('✅ Embedsy initialized for project:', projectId);
+}
+
+// Also expose manual init for backwards compat
+window.Embedsy = {
+  init: ({ projectId, apiKey, title, position = 'bottom-right' }) => {
+    let container = document.getElementById('embedsy-widget-root');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'embedsy-widget-root';
+      document.body.appendChild(container);
     }
-  });
-});
+    createRoot(container).render(
+      <App projectId={projectId} apiKey={apiKey} title={title} position={position} themeColor="#00FF87" />
+    );
+  },
+  version: '2.0.0',
+};
 
-app.get('/health', (req, res) => {
-  res.json({ 
-    success: true,
-    status: 'healthy',
-    uptime: process.uptime(),
-    memory: process.memoryUsage(),
-    timestamp: new Date().toISOString()
-  });
-});
-
-app.use('/api', projectsRouter);
-app.use('/api', documentsRouter);
-app.use('/api', chatRouter);
-
-app.use(notFoundHandler);
-app.use(errorHandler);
-
-app.listen(PORT, () => {
-  console.log('');
-  console.log('🔌 ================================');
-  console.log('🚀 Embedsy Backend Server');
-  console.log('🔌 ================================');
-  console.log(`📍 Running on: http://localhost:${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`⏰ Started at: ${new Date().toLocaleString()}`);
-  console.log('🔌 ================================');
-  console.log('');
-  logger.info('Server started successfully');
-});
-
-process.on('uncaughtException', (error) => {
-  logger.error('Uncaught Exception', error);
-  process.exit(1);
-});
-
-process.on('unhandledRejection', (error) => {
-  logger.error('Unhandled Rejection', error);
-  process.exit(1);
-});
+bootstrap();
