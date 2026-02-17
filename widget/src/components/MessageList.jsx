@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Message from './Message';
 import TypingIndicator from './TypingIndicator';
 import ErrorMessage from './ErrorMessage';

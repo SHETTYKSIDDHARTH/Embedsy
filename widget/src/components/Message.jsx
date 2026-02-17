@@ -1,3 +1,4 @@
+import React from 'react';
 import { formatTime, formatConfidence } from '../utils/formatters';
 import SourceCitation from './SourceCitation';
 

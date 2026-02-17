@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import SendButton from './SendButton';
 
 export default function InputBox({ onSend, disabled }) {
