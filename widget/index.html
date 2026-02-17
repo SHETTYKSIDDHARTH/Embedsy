@@ -36,14 +36,17 @@
     <p>The chat bubble should appear in the <strong>bottom-right corner</strong>.</p>
   </div>
 
+  <script type="module" src="/src/index.jsx"></script>
   <script type="module">
-    import initEmbedsy from '/src/index.jsx';
-
-    initEmbedsy({
-      projectId: 'cfc1a0f3-55db-431d-9a13-b61319c8d038',
-      apiKey: 'embedsy_dd10315d2dda4f458bc84fd40f3bff35',
-      title: 'Embedsy Assistant',
-      position: 'bottom-right'
+    // Wait for module to load then init
+    import('/src/index.jsx').then(mod => {
+      const initEmbedsy = mod.default;
+      initEmbedsy({
+        projectId: 'cfc1a0f3-55db-431d-9a13-b61319c8d038',
+        apiKey: 'embedsy_dd10315d2dda4f458bc84fd40f3bff35',
+        title: 'Embedsy Assistant',
+        position: 'bottom-right',
+      });
     });
   </script>
 </body>

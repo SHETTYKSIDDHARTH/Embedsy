@@ -6,18 +6,15 @@
 <body>
   <h1>Welcome to TechCorp</h1>
   <p>Our amazing products...</p>
-  
-  <!-- EMBEDSY CODE PASTED HERE -->
-  <!-- EMBEDSY CODE - LOCAL DEVELOPMENT VERSION -->
-<script type="module">
-  import initEmbedsy from 'http://localhost:5173/src/index.jsx';
-  
-  initEmbedsy({
-    projectId: 'cfc1a0f3-55db-431d-9a13-b61319c8d038',
-    apiKey: 'embedsy_dd10315d2dda4f458bc84fd40f3bff35',
-    title: 'Ask us anything!',
-    position: 'bottom-right'
-  });
-</script>
+
+  <script src="http://localhost:5173/dist/widget.js"></script>
+  <script>
+    window.Embedsy.init({
+      projectId: 'cfc1a0f3-55db-431d-9a13-b61319c8d038',
+      apiKey: 'embedsy_dd10315d2dda4f458bc84fd40f3bff35',
+      title: 'Ask us anything!',
+      position: 'bottom-right',
+    });
+  </script>
 </body>
 </html>

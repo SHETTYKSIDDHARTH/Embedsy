@@ -5,14 +5,23 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    cors: true
+    cors: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
   },
   build: {
+    outDir: 'dist',
     lib: {
       entry: 'src/index.jsx',
       name: 'Embedsy',
-      fileName: 'widget',
-      formats: ['iife']
-    }
-  }
+      fileName: () => 'widget.js',
+      formats: ['iife'],
+    },
+    rollupOptions: {
+      output: {
+        inlineDynamicImports: true,
+      },
+    },
+  },
 });
