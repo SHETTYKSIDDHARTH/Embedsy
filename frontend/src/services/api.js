@@ -70,5 +70,5 @@ export const deleteDocument = (projectId, filename) =>
   client.delete(`/projects/${projectId}/documents/${encodeURIComponent(filename)}`).then(r => r.data);
 
 // ── Chat ──────────────────────────────────────────────
-export const sendChat = (projectId, message, apiKey) =>
-  client.post('/chat', { projectId, message, apiKey }).then(r => r.data);
+export const sendChat = (projectId, message, apiKey, targetLanguage = 'en') =>
+  client.post('/chat', { projectId, message, apiKey, targetLanguage }).then(r => r.data);

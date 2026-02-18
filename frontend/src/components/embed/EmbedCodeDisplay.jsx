@@ -1,23 +1,10 @@
 import React, { useState } from 'react';
 import CodeSnippet from './CodeSnippet';
 
-const TABS = ['HTML', 'React', 'Next.js'];
+const TABS = ['React', 'Next.js'];
 
 export default function EmbedCodeDisplay({ project }) {
-  const [activeTab, setActiveTab] = useState('HTML');
-
-  const backendUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'https://your-backend.onrender.com';
-  const widgetUrl = `${backendUrl}/widget.js`;
-
-  // ── HTML snippet ──────────────────────────────────────
-  const htmlSnippet = `<!-- Add before </body> -->
-<script
-  src="${widgetUrl}"
-  data-project="${project.id}"
-  data-title="${project.widget_title || project.name}"
-  data-position="bottom-right"
-  async>
-</script>`;
+  const [activeTab, setActiveTab] = useState('React');
 
   // ── React snippet ─────────────────────────────────────
   const reactInstall = `npm install @embedsy/react`;
@@ -87,18 +74,6 @@ export default function Page() {
           </button>
         ))}
       </div>
-
-      {/* HTML Tab */}
-      {activeTab === 'HTML' && (
-        <div className="flex flex-col gap-4">
-          <div>
-            <p className="text-xs text-gray-500 mb-3">
-              Add this script tag anywhere inside your website's <code className="text-brand">&lt;body&gt;</code>
-            </p>
-            <CodeSnippet code={htmlSnippet} label="HTML" />
-          </div>
-        </div>
-      )}
 
       {/* React Tab */}
       {activeTab === 'React' && (
