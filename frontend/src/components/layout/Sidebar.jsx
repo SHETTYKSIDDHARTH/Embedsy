@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const navItems = [
   {
@@ -15,6 +16,14 @@ const navItems = [
 ];
 
 export default function Sidebar() {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/login');
+  };
+
   return (
     <aside className="w-56 bg-dark-100 border-r border-dark-300 flex flex-col shrink-0">
       {/* Logo */}
@@ -42,9 +51,26 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      {/* Footer */}
-      <div className="p-4 border-t border-dark-300">
-        <p className="text-xs text-gray-600">Embedsy v1.0.0</p>
+      {/* User + logout */}
+      <div className="p-3 border-t border-dark-300">
+        <div className="flex items-center gap-2 px-2 py-2 mb-1">
+          <div className="w-7 h-7 rounded-full bg-brand/20 border border-brand/30 flex items-center justify-center shrink-0">
+            <span className="text-xs font-bold text-brand">
+              {user?.email?.[0]?.toUpperCase()}
+            </span>
+          </div>
+          <span className="text-xs text-gray-400 truncate">{user?.email}</span>
+        </div>
+        <button
+          onClick={handleSignOut}
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-500 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          Sign out
+        </button>
       </div>
     </aside>
   );

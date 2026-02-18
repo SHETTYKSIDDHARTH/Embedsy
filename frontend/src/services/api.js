@@ -7,6 +7,35 @@ const client = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+// Attach Supabase JWT to every request automatically
+client.interceptors.request.use((config) => {
+  // Supabase stores session under sb-<project-ref>-auth-token
+  const supabaseKey = Object.keys(localStorage).find(
+    k => k.startsWith('sb-') && k.endsWith('-auth-token')
+  );
+  if (supabaseKey) {
+    try {
+      const session = JSON.parse(localStorage.getItem(supabaseKey));
+      const token = session?.access_token;
+      if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+      }
+    } catch {}
+  }
+  return config;
+});
+
+// If token expired or invalid, redirect to login
+client.interceptors.response.use(
+  (res) => res,
+  (error) => {
+    if (error.response?.status === 401) {
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 // ── Projects ──────────────────────────────────────────
 export const getProjects = () =>
   client.get('/projects').then(r => r.data);

@@ -13,7 +13,10 @@ export const useProjects = () => {
       const data = await getProjects();
       setProjects(data.projects || []);
     } catch (err) {
-      setError(err.response?.data?.error || err.message);
+      // Don't set error on 401 — api.js interceptor redirects to login
+      if (err.response?.status !== 401) {
+        setError(err.response?.data?.error || err.message);
+      }
     } finally {
       setLoading(false);
     }
