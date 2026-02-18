@@ -20,9 +20,12 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString(), version: '1.0.0' });
 });
 
+// Chat must come FIRST — it's public, no auth required
+app.use('/api', chatRoutes);
+
+// These routes require auth
 app.use('/api', projectRoutes);
 app.use('/api', documentRoutes);
-app.use('/api', chatRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
