@@ -9,19 +9,59 @@ const client = axios.create({
 
 // Attach Supabase JWT to every request automatically
 client.interceptors.request.use((config) => {
-  // Supabase stores session under sb-<project-ref>-auth-token
-  const supabaseKey = Object.keys(localStorage).find(
-    k => k.startsWith('sb-') && k.endsWith('-auth-token')
-  );
-  if (supabaseKey) {
+  // Try multiple methods to find the auth token
+  let token = null;
+
+  // Method 1: Find sb-*-auth-token key (main Supabase session key)
+  const supabaseKeys = Object.keys(localStorage);
+  const authKey = supabaseKeys.find(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
+  
+  if (authKey) {
     try {
-      const session = JSON.parse(localStorage.getItem(supabaseKey));
-      const token = session?.access_token;
-      if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
+      const sessionData = JSON.parse(localStorage.getItem(authKey));
+      if (sessionData?.access_token) {
+        token = sessionData.access_token;
       }
-    } catch {}
+    } catch (e) {
+      console.warn('Failed to parse auth token from Supabase key:', authKey);
+    }
   }
+
+  // Method 2: Fallback - check supabase-auth-token
+  if (!token) {
+    try {
+      const fallbackSession = localStorage.getItem('supabase-auth-token');
+      if (fallbackSession) {
+        const sessionData = JSON.parse(fallbackSession);
+        if (sessionData?.access_token) {
+          token = sessionData.access_token;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to parse fallback supabase-auth-token');
+    }
+  }
+
+  // Method 3: Fallback - check supabase-session
+  if (!token) {
+    try {
+      const fallbackSession = localStorage.getItem('supabase-session');
+      if (fallbackSession) {
+        const sessionData = JSON.parse(fallbackSession);
+        if (sessionData?.access_token) {
+          token = sessionData.access_token;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to parse supabase-session');
+    }
+  }
+
+  // Attach token if found
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
+
   return config;
 });
 
@@ -30,6 +70,8 @@ client.interceptors.response.use(
   (res) => res,
   (error) => {
     if (error.response?.status === 401) {
+      // Unauthorized - token expired or invalid
+      localStorage.clear(); // Clear auth data
       window.location.href = '/login';
     }
     return Promise.reject(error);
