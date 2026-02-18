@@ -1,22 +1,30 @@
+import React from 'react';
 import Header from './Header';
 import MessageList from './MessageList';
 import InputBox from './InputBox';
 
-export default function ChatWindow({ 
-  messages, 
-  isLoading, 
-  error, 
-  onSend, 
+export default function ChatWindow({
+  messages,
+  isLoading,
+  error,
+  onSend,
   onClose,
   onRetry,
-  title 
+  title,
+  selectedLanguage,
+  onLanguageChange,
 }) {
   return (
     <div className="embedsy-chat-window">
-      <Header onClose={onClose} title={title} />
-      <MessageList 
-        messages={messages} 
-        isLoading={isLoading} 
+      <Header
+        onClose={onClose}
+        title={title}
+        selectedLanguage={selectedLanguage}
+        onLanguageChange={onLanguageChange}
+      />
+      <MessageList
+        messages={messages}
+        isLoading={isLoading}
         error={error}
         onRetry={onRetry}
       />

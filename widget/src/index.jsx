@@ -11,9 +11,9 @@ async function fetchProjectConfig(projectId) {
 }
 
 async function bootstrap() {
-  const script =
-    document.currentScript ||
-    document.querySelector('script[data-project]');
+  // For ES modules, document.currentScript is null
+  // So we find the script tag by data-project attribute instead
+  const script = document.querySelector('script[data-project]');
 
   if (!script) {
     console.error('Embedsy: Could not find script tag with data-project attribute');
@@ -58,6 +58,7 @@ async function bootstrap() {
   console.log('✅ Embedsy initialized for project:', projectId);
 }
 
+// Manual init for programmatic use
 window.Embedsy = {
   init: ({ projectId, apiKey, title, position = 'bottom-right', themeColor = '#00FF87' }) => {
     let container = document.getElementById('embedsy-widget-root');

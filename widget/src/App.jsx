@@ -5,12 +5,12 @@ import { useMessages } from './hooks/useMessages';
 import { useChat } from './hooks/useChat';
 import './styles/widget.css';
 
-// FIX: themeColor was received but never applied anywhere
 export default function App({ projectId, apiKey, title, position = 'bottom-right', themeColor = '#00FF87' }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
   const { messages, addMessage, clearAllMessages } = useMessages(projectId);
 
-  // Inject themeColor as CSS variable so widget.css can use it
+  // Apply themeColor as CSS variable
   useEffect(() => {
     const containerId = `embedsy-root-${projectId}`;
     const container =
@@ -27,11 +27,15 @@ export default function App({ projectId, apiKey, title, position = 'bottom-right
       content: response.answer,
       sources: response.sources,
       confidence: response.confidence,
-      language: response.language
     });
   };
 
-  const { send, isLoading, error, clearError } = useChat(projectId, apiKey, handleMessageReceived);
+  const { send, isLoading, error, clearError } = useChat(
+    projectId,
+    apiKey,
+    selectedLanguage,        // pass language to useChat
+    handleMessageReceived
+  );
 
   const handleSend = async (message) => {
     addMessage({ role: 'user', content: message });
@@ -51,6 +55,12 @@ export default function App({ projectId, apiKey, title, position = 'bottom-right
     }
   };
 
+  const handleLanguageChange = (langCode) => {
+    setSelectedLanguage(langCode);
+    // Clear messages when language changes so context is fresh
+    clearAllMessages();
+  };
+
   return (
     <div className={`embedsy-widget-container embedsy-position-${position}`}>
       {isOpen ? (
@@ -63,6 +73,8 @@ export default function App({ projectId, apiKey, title, position = 'bottom-right
           onRetry={handleRetry}
           onClear={clearAllMessages}
           title={title || 'Chat with us'}
+          selectedLanguage={selectedLanguage}
+          onLanguageChange={handleLanguageChange}
         />
       ) : (
         <ChatBubble onClick={() => setIsOpen(true)} />

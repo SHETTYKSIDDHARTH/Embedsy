@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { sendMessage } from '../services/api.js';
 
-export const useChat = (projectId, apiKey, onMessageReceived) => {
+// Now accepts selectedLanguage
+export const useChat = (projectId, apiKey, selectedLanguage, onMessageReceived) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -12,12 +13,12 @@ export const useChat = (projectId, apiKey, onMessageReceived) => {
     setError(null);
 
     try {
-      const response = await sendMessage(projectId, message, apiKey);
-      
+      const response = await sendMessage(projectId, message, apiKey, selectedLanguage);
+
       if (onMessageReceived) {
         onMessageReceived(response);
       }
-      
+
       return response;
     } catch (err) {
       setError(err.message);
