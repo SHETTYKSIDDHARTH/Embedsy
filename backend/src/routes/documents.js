@@ -6,7 +6,8 @@ import { generateEmbeddings } from '../services/embedding.js';
 import { storeEmbeddings } from '../services/vectordb.js';
 import { validateFile } from '../utils/validators.js';
 import { logger } from '../utils/logger.js';
-import { supabase } from '../config/database.js'; // FIX: was missing
+import { supabaseAdmin } from '../config/database.js';  // changed
+import { requireAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -15,16 +16,23 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 }
 });
 
+router.use(requireAuth);
+
 router.post('/projects/:projectId/upload', upload.single('file'), async (req, res) => {
   try {
     const { projectId } = req.params;
     const file = req.file;
 
-    logger.info('Document upload started', {
-      projectId,
-      filename: file?.originalname,
-      size: file?.size
-    });
+    const { data: project, error: projError } = await supabaseAdmin
+      .from('projects')
+      .select('id')
+      .eq('id', projectId)
+      .eq('user_id', req.user.id)
+      .single();
+
+    if (projError || !project) {
+      return res.status(404).json({ success: false, error: 'Project not found' });
+    }
 
     if (!file) {
       return res.status(400).json({ success: false, error: 'No file provided' });
@@ -32,7 +40,6 @@ router.post('/projects/:projectId/upload', upload.single('file'), async (req, re
 
     validateFile(file);
 
-    logger.info('Parsing document');
     const rawText = await parseDocument(file.buffer, file.mimetype);
 
     if (!rawText || rawText.trim().length === 0) {
@@ -40,19 +47,13 @@ router.post('/projects/:projectId/upload', upload.single('file'), async (req, re
     }
 
     const text = cleanText(rawText);
-    logger.info('Document parsed', { textLength: text.length });
-
     const chunks = chunkText(text);
 
     if (chunks.length === 0) {
       return res.status(400).json({ success: false, error: 'Document could not be properly chunked' });
     }
 
-    logger.info('Generating embeddings');
     const embeddings = await generateEmbeddings(chunks);
-
-    logger.info('Storing embeddings');
-    // FIX: pass filename so documents list works correctly
     await storeEmbeddings(projectId, chunks, embeddings, file.originalname);
 
     logger.info('Document upload complete', { projectId, chunks: chunks.length });
@@ -65,21 +66,30 @@ router.post('/projects/:projectId/upload', upload.single('file'), async (req, re
         fileSize: file.size,
         chunks: chunks.length,
         textLength: text.length,
-        processingTime: 'completed'
       }
     });
   } catch (error) {
     logger.error('Document upload failed', error);
-    res.status(500).json({ success: false, error: error.message || 'Failed to process document' });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
 router.get('/projects/:projectId/documents', async (req, res) => {
   try {
     const { projectId } = req.params;
-    logger.info('Fetching documents', { projectId });
 
-    const { data, error } = await supabase
+    const { data: project, error: projError } = await supabaseAdmin
+      .from('projects')
+      .select('id')
+      .eq('id', projectId)
+      .eq('user_id', req.user.id)
+      .single();
+
+    if (projError || !project) {
+      return res.status(404).json({ success: false, error: 'Project not found' });
+    }
+
+    const { data, error } = await supabaseAdmin
       .from('embeddings')
       .select('id, chunk_text, metadata, created_at')
       .eq('project_id', projectId)
@@ -103,16 +113,28 @@ router.get('/projects/:projectId/documents', async (req, res) => {
     });
   } catch (error) {
     logger.error('Get documents error', error);
-    res.status(500).json({ success: false, error: error.message || 'Failed to fetch documents' });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
 router.delete('/projects/:projectId/documents/:filename', async (req, res) => {
   try {
     const { projectId, filename } = req.params;
+
+    const { data: project, error: projError } = await supabaseAdmin
+      .from('projects')
+      .select('id')
+      .eq('id', projectId)
+      .eq('user_id', req.user.id)
+      .single();
+
+    if (projError || !project) {
+      return res.status(404).json({ success: false, error: 'Project not found' });
+    }
+
     const decodedFilename = decodeURIComponent(filename);
 
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('embeddings')
       .delete()
       .eq('project_id', projectId)

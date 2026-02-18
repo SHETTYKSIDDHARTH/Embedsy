@@ -1,7 +1,6 @@
-import { supabase } from '../config/database.js';
+import { supabaseAdmin } from '../config/database.js';  // changed
 import { logger } from '../utils/logger.js';
 
-// FIX: added filename parameter — was missing, caused all docs to show as 'Unknown'
 export const storeEmbeddings = async (projectId, chunks, embeddings, filename = 'Unknown') => {
   try {
     logger.info('Storing embeddings', { projectId, count: chunks.length });
@@ -13,20 +12,17 @@ export const storeEmbeddings = async (projectId, chunks, embeddings, filename = 
       metadata: {
         index,
         length: chunk.length,
-        filename,  // FIX: was missing
+        filename,
         created_at: new Date().toISOString()
       }
     }));
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('embeddings')
       .insert(records)
       .select();
 
-    if (error) {
-      logger.error('Supabase insert error', error);
-      throw error;
-    }
+    if (error) throw error;
 
     logger.info(`Stored ${chunks.length} embeddings successfully`);
     return data;
@@ -40,17 +36,14 @@ export const searchSimilarChunks = async (projectId, queryEmbedding, topK = 5) =
   try {
     logger.info('Searching similar chunks', { projectId, topK });
 
-    const { data, error } = await supabase.rpc('match_embeddings', {
+    const { data, error } = await supabaseAdmin.rpc('match_embeddings', {
       query_embedding: `[${queryEmbedding.join(',')}]`,
       match_threshold: 0.0,
       match_count: topK,
       project_id: projectId
     });
 
-    if (error) {
-      logger.error('Vector search error', error);
-      throw error;
-    }
+    if (error) throw error;
 
     logger.info('Search complete', { resultsFound: data?.length || 0 });
     return data || [];
@@ -62,7 +55,7 @@ export const searchSimilarChunks = async (projectId, queryEmbedding, topK = 5) =
 
 export const deleteProjectEmbeddings = async (projectId) => {
   try {
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('embeddings')
       .delete()
       .eq('project_id', projectId);

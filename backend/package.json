@@ -2,21 +2,13 @@
   "name": "embedsy-backend",
   "version": "1.0.0",
   "type": "module",
-  "description": "Embedsy Backend API for AI chatbot generation",
+  "description": "Embedsy Backend API",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "test": "node test-upload.js"
   },
-  "keywords": [
-    "embedsy",
-    "ai",
-    "chatbot",
-    "rag"
-  ],
-  "author": "Your Name",
-  "license": "MIT",
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
     "axios": "^1.6.2",
