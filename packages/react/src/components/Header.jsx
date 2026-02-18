@@ -14,46 +14,81 @@ const LANGUAGES = [
   { code: 'ko', label: 'KO', name: 'Korean' },
 ];
 
-export default function Header({ onClose, title = 'Chat with us', selectedLanguage, onLanguageChange }) {
+export default function Header({ onClose, title = 'Chat with us', themeColor = '#00FF87', selectedLanguage, onLanguageChange }) {
   const [isOpen, setIsOpen] = useState(false);
   const current = LANGUAGES.find(l => l.code === selectedLanguage) || LANGUAGES[0];
 
-  return (
-    <div className="embedsy-chat-header">
-      <h3>{title}</h3>
+  // Determine if theme color is light or dark for text contrast
+  const isLight = themeColor === '#ffffff' || themeColor === '#fff' || themeColor.toLowerCase() === '#ffffffff';
+  const textColor = '#000000';
 
-      <div className="embedsy-header-actions">
-        {/* Language Selector */}
-        <div className="embedsy-lang-selector">
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '14px 16px',
+      background: themeColor,
+      flexShrink: '0',
+      position: 'relative',
+    }}>
+      {/* Status dot + title */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+        <div style={{
+          width: '8px', height: '8px', borderRadius: '50%',
+          background: '#000', opacity: 0.4,
+          boxShadow: '0 0 0 2px rgba(0,0,0,0.15)',
+        }} />
+        <span style={{ fontSize: '14px', fontWeight: '700', color: textColor, margin: 0 }}>
+          {title}
+        </span>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        {/* Language selector */}
+        <div style={{ position: 'relative' }}>
           <button
-            className="embedsy-lang-btn"
             onClick={() => setIsOpen(!isOpen)}
-            title="Select language"
+            style={{
+              display: 'flex', alignItems: 'center', gap: '3px',
+              background: 'rgba(0,0,0,0.15)', border: '1px solid rgba(0,0,0,0.1)',
+              borderRadius: '6px', padding: '4px 8px',
+              fontSize: '11px', fontWeight: '700', color: textColor,
+              cursor: 'pointer', letterSpacing: '0.5px',
+              transition: 'background 0.2s', outline: 'none',
+            }}
           >
             {current.label}
-            <svg
-              className={`embedsy-lang-chevron ${isOpen ? 'open' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
 
           {isOpen && (
-            <div className="embedsy-lang-dropdown">
+            <div style={{
+              position: 'absolute', top: 'calc(100% + 8px)', right: '0',
+              background: '#111', border: '1px solid #2a2a2a',
+              borderRadius: '12px', overflow: 'hidden',
+              zIndex: '10000001', minWidth: '150px',
+              boxShadow: '0 12px 32px rgba(0,0,0,0.6)',
+            }}>
               {LANGUAGES.map(lang => (
                 <button
                   key={lang.code}
-                  className={`embedsy-lang-option ${lang.code === selectedLanguage ? 'active' : ''}`}
-                  onClick={() => {
-                    onLanguageChange(lang.code);
-                    setIsOpen(false);
+                  onClick={() => { onLanguageChange(lang.code); setIsOpen(false); }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '10px',
+                    width: '100%', padding: '9px 14px',
+                    background: lang.code === selectedLanguage ? 'rgba(255,255,255,0.06)' : 'transparent',
+                    border: 'none', cursor: 'pointer',
+                    transition: 'background 0.15s', textAlign: 'left', outline: 'none',
                   }}
                 >
-                  <span className="embedsy-lang-option-code">{lang.label}</span>
-                  <span className="embedsy-lang-option-name">{lang.name}</span>
+                  <span style={{ fontSize: '11px', fontWeight: '700', color: themeColor, minWidth: '26px', letterSpacing: '0.5px' }}>
+                    {lang.label}
+                  </span>
+                  <span style={{ fontSize: '12px', color: '#ccc' }}>{lang.name}</span>
                 </button>
               ))}
             </div>
@@ -62,12 +97,16 @@ export default function Header({ onClose, title = 'Chat with us', selectedLangua
 
         {/* Close button */}
         <button
-          className="embedsy-close-btn"
           onClick={onClose}
           aria-label="Close chat"
-          title="Close chat"
+          style={{
+            background: 'rgba(0,0,0,0.15)', border: 'none', borderRadius: '6px',
+            padding: '5px', cursor: 'pointer', display: 'flex',
+            alignItems: 'center', justifyContent: 'center',
+            color: textColor, transition: 'background 0.2s', outline: 'none',
+          }}
         >
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>

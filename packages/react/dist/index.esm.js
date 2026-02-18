@@ -1,53 +1,45 @@
-import { jsxs as c, jsx as t } from "react/jsx-runtime";
-import { useState as h, useRef as v, useEffect as y } from "react";
-function A({ onClick: e, unreadCount: n = 0 }) {
-  return /* @__PURE__ */ c(
+import { jsx as r, jsxs as c } from "react/jsx-runtime";
+import { useState as f, useRef as S, useEffect as b } from "react";
+function C({ onClick: t, themeColor: e = "#00FF87" }) {
+  const [n, a] = f(!1);
+  return /* @__PURE__ */ r(
     "button",
     {
-      className: "embedsy-chat-bubble",
-      onClick: e,
+      onClick: t,
+      onMouseEnter: () => a(!0),
+      onMouseLeave: () => a(!1),
       "aria-label": "Open chat",
-      title: "Open chat",
-      children: [
-        /* @__PURE__ */ t(
-          "svg",
-          {
-            fill: "none",
-            stroke: "currentColor",
-            viewBox: "0 0 24 24",
-            xmlns: "http://www.w3.org/2000/svg",
-            children: /* @__PURE__ */ t(
-              "path",
-              {
-                strokeLinecap: "round",
-                strokeLinejoin: "round",
-                strokeWidth: 2.5,
-                d: "M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-              }
-            )
-          }
-        ),
-        n > 0 && /* @__PURE__ */ t("span", { style: {
-          position: "absolute",
-          top: "-4px",
-          right: "-4px",
-          background: "#FF4757",
-          color: "#FFFFFF",
-          borderRadius: "50%",
-          width: "24px",
-          height: "24px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: "12px",
-          fontWeight: "700",
-          border: "2px solid #0A0A0A"
-        }, children: n })
-      ]
+      style: {
+        width: "60px",
+        height: "60px",
+        borderRadius: "50%",
+        background: e,
+        border: "none",
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        boxShadow: n ? "0 8px 32px rgba(0,0,0,0.4)" : "0 4px 20px rgba(0,0,0,0.3)",
+        transform: n ? "scale(1.1)" : "scale(1)",
+        transition: "all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        color: "#000",
+        outline: "none",
+        padding: "0",
+        flexShrink: "0"
+      },
+      children: /* @__PURE__ */ r("svg", { width: "26", height: "26", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: /* @__PURE__ */ r(
+        "path",
+        {
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeWidth: 2.5,
+          d: "M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+        }
+      ) })
     }
   );
 }
-const w = [
+const y = [
   { code: "en", label: "EN", name: "English" },
   { code: "hi", label: "HI", name: "Hindi" },
   { code: "es", label: "ES", name: "Spanish" },
@@ -60,255 +52,442 @@ const w = [
   { code: "ja", label: "JA", name: "Japanese" },
   { code: "ko", label: "KO", name: "Korean" }
 ];
-function D({ onClose: e, title: n = "Chat with us", selectedLanguage: o, onLanguageChange: a }) {
-  const [r, s] = h(!1), l = w.find((i) => i.code === o) || w[0];
-  return /* @__PURE__ */ c("div", { className: "embedsy-chat-header", children: [
-    /* @__PURE__ */ t("h3", { children: n }),
-    /* @__PURE__ */ c("div", { className: "embedsy-header-actions", children: [
-      /* @__PURE__ */ c("div", { className: "embedsy-lang-selector", children: [
+function L({ onClose: t, title: e = "Chat with us", themeColor: n = "#00FF87", selectedLanguage: a, onLanguageChange: s }) {
+  const [o, l] = f(!1), i = y.find((p) => p.code === a) || y[0];
+  n === "#ffffff" || n === "#fff" || n.toLowerCase();
+  const d = "#000000";
+  return /* @__PURE__ */ c("div", { style: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "14px 16px",
+    background: n,
+    flexShrink: "0",
+    position: "relative"
+  }, children: [
+    /* @__PURE__ */ c("div", { style: { display: "flex", alignItems: "center", gap: "8px", flex: 1 }, children: [
+      /* @__PURE__ */ r("div", { style: {
+        width: "8px",
+        height: "8px",
+        borderRadius: "50%",
+        background: "#000",
+        opacity: 0.4,
+        boxShadow: "0 0 0 2px rgba(0,0,0,0.15)"
+      } }),
+      /* @__PURE__ */ r("span", { style: { fontSize: "14px", fontWeight: "700", color: d, margin: 0 }, children: e })
+    ] }),
+    /* @__PURE__ */ c("div", { style: { display: "flex", alignItems: "center", gap: "6px" }, children: [
+      /* @__PURE__ */ c("div", { style: { position: "relative" }, children: [
         /* @__PURE__ */ c(
           "button",
           {
-            className: "embedsy-lang-btn",
-            onClick: () => s(!r),
-            title: "Select language",
+            onClick: () => l(!o),
+            style: {
+              display: "flex",
+              alignItems: "center",
+              gap: "3px",
+              background: "rgba(0,0,0,0.15)",
+              border: "1px solid rgba(0,0,0,0.1)",
+              borderRadius: "6px",
+              padding: "4px 8px",
+              fontSize: "11px",
+              fontWeight: "700",
+              color: d,
+              cursor: "pointer",
+              letterSpacing: "0.5px",
+              transition: "background 0.2s",
+              outline: "none"
+            },
             children: [
-              l.label,
-              /* @__PURE__ */ t(
+              i.label,
+              /* @__PURE__ */ r(
                 "svg",
                 {
-                  className: `embedsy-lang-chevron ${r ? "open" : ""}`,
+                  width: "10",
+                  height: "10",
                   fill: "none",
                   stroke: "currentColor",
                   viewBox: "0 0 24 24",
-                  children: /* @__PURE__ */ t("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2.5, d: "M19 9l-7 7-7-7" })
+                  style: { transform: o ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" },
+                  children: /* @__PURE__ */ r("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2.5, d: "M19 9l-7 7-7-7" })
                 }
               )
             ]
           }
         ),
-        r && /* @__PURE__ */ t("div", { className: "embedsy-lang-dropdown", children: w.map((i) => /* @__PURE__ */ c(
+        o && /* @__PURE__ */ r("div", { style: {
+          position: "absolute",
+          top: "calc(100% + 8px)",
+          right: "0",
+          background: "#111",
+          border: "1px solid #2a2a2a",
+          borderRadius: "12px",
+          overflow: "hidden",
+          zIndex: "10000001",
+          minWidth: "150px",
+          boxShadow: "0 12px 32px rgba(0,0,0,0.6)"
+        }, children: y.map((p) => /* @__PURE__ */ c(
           "button",
           {
-            className: `embedsy-lang-option ${i.code === o ? "active" : ""}`,
             onClick: () => {
-              a(i.code), s(!1);
+              s(p.code), l(!1);
+            },
+            style: {
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              width: "100%",
+              padding: "9px 14px",
+              background: p.code === a ? "rgba(255,255,255,0.06)" : "transparent",
+              border: "none",
+              cursor: "pointer",
+              transition: "background 0.15s",
+              textAlign: "left",
+              outline: "none"
             },
             children: [
-              /* @__PURE__ */ t("span", { className: "embedsy-lang-option-code", children: i.label }),
-              /* @__PURE__ */ t("span", { className: "embedsy-lang-option-name", children: i.name })
+              /* @__PURE__ */ r("span", { style: { fontSize: "11px", fontWeight: "700", color: n, minWidth: "26px", letterSpacing: "0.5px" }, children: p.label }),
+              /* @__PURE__ */ r("span", { style: { fontSize: "12px", color: "#ccc" }, children: p.name })
             ]
           },
-          i.code
+          p.code
         )) })
       ] }),
-      /* @__PURE__ */ t(
+      /* @__PURE__ */ r(
         "button",
         {
-          className: "embedsy-close-btn",
-          onClick: e,
+          onClick: t,
           "aria-label": "Close chat",
-          title: "Close chat",
-          children: /* @__PURE__ */ t("svg", { fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: /* @__PURE__ */ t("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2.5, d: "M6 18L18 6M6 6l12 12" }) })
+          style: {
+            background: "rgba(0,0,0,0.15)",
+            border: "none",
+            borderRadius: "6px",
+            padding: "5px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: d,
+            transition: "background 0.2s",
+            outline: "none"
+          },
+          children: /* @__PURE__ */ r("svg", { width: "16", height: "16", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: /* @__PURE__ */ r("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2.5, d: "M6 18L18 6M6 6l12 12" }) })
         }
       )
     ] })
   ] });
 }
-const O = (e) => {
-  const n = /* @__PURE__ */ new Date(), o = new Date(e), a = Math.floor((n - o) / 6e4);
+const A = (t) => {
+  const e = /* @__PURE__ */ new Date(), n = new Date(t), a = Math.floor((e - n) / 6e4);
   if (a < 1) return "Just now";
   if (a < 60) return `${a}m ago`;
-  const r = Math.floor(a / 60);
-  return r < 24 ? `${r}h ago` : o.toLocaleDateString();
-}, f = (e) => e >= 80 ? { text: "High", color: "#00FF87" } : e >= 60 ? { text: "Medium", color: "#FFA502" } : { text: "Low", color: "#FF4757" };
-function $({ sources: e }) {
-  return !e || e.length === 0 ? null : /* @__PURE__ */ c("div", { className: "embedsy-source-citation", children: [
-    "Based on ",
-    e.length,
-    " source",
-    e.length > 1 ? "s" : "",
-    " from documentation"
+  const s = Math.floor(a / 60);
+  return s < 24 ? `${s}h ago` : n.toLocaleDateString();
+};
+function z({ message: t, themeColor: e = "#00FF87" }) {
+  const { role: n, content: a, timestamp: s, sources: o, confidence: l } = t, i = n === "user";
+  return /* @__PURE__ */ c("div", { style: {
+    display: "flex",
+    flexDirection: "column",
+    maxWidth: "85%",
+    alignSelf: i ? "flex-end" : "flex-start",
+    alignItems: i ? "flex-end" : "flex-start"
+  }, children: [
+    /* @__PURE__ */ r("div", { style: {
+      padding: "10px 14px",
+      borderRadius: i ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
+      fontSize: "13px",
+      lineHeight: "1.6",
+      wordBreak: "break-word",
+      background: i ? e : "#1e1e1e",
+      color: i ? "#000" : "#e8e8e8",
+      border: i ? "none" : "1px solid #2a2a2a",
+      boxShadow: "0 1px 4px rgba(0,0,0,0.2)"
+    }, children: a }),
+    o && o.length > 0 && /* @__PURE__ */ c("div", { style: { fontSize: "11px", color: "#555", marginTop: "4px", padding: "0 4px" }, children: [
+      "Based on ",
+      o.length,
+      " source",
+      o.length > 1 ? "s" : ""
+    ] }),
+    /* @__PURE__ */ r("div", { style: { fontSize: "10px", color: "#444", marginTop: "3px", padding: "0 4px" }, children: A(s) })
   ] });
 }
-function T({ message: e }) {
-  const { role: n, content: o, timestamp: a, sources: r, confidence: s } = e;
-  return /* @__PURE__ */ c("div", { className: `embedsy-message ${n}`, children: [
-    /* @__PURE__ */ c("div", { className: "embedsy-message-bubble", children: [
-      o,
-      s && s > 0 && /* @__PURE__ */ t(
-        "span",
-        {
-          className: "embedsy-confidence-badge",
-          style: {
-            background: `${f(s).color}25`,
-            color: f(s).color,
-            borderColor: `${f(s).color}50`
-          },
-          children: f(s).text
+function O() {
+  return /* @__PURE__ */ c("div", { style: {
+    alignSelf: "flex-start",
+    display: "flex",
+    alignItems: "center",
+    gap: "4px",
+    padding: "12px 16px",
+    background: "#1e1e1e",
+    border: "1px solid #2a2a2a",
+    borderRadius: "14px 14px 14px 4px",
+    boxShadow: "0 1px 4px rgba(0,0,0,0.2)"
+  }, children: [
+    [0, 1, 2].map((t) => /* @__PURE__ */ r(
+      "div",
+      {
+        style: {
+          width: "6px",
+          height: "6px",
+          background: "#555",
+          borderRadius: "50%",
+          animation: `embedsy-bounce 1.2s ease-in-out ${t * 0.2}s infinite`
         }
-      )
-    ] }),
-    r && r.length > 0 && /* @__PURE__ */ t($, { sources: r }),
-    /* @__PURE__ */ t("div", { className: "embedsy-message-time", children: O(a) })
+      },
+      t
+    )),
+    /* @__PURE__ */ r("style", { children: `
+        @keyframes embedsy-bounce {
+          0%, 60%, 100% { transform: translateY(0); }
+          30% { transform: translateY(-5px); }
+        }
+      ` })
   ] });
 }
-function _() {
-  return /* @__PURE__ */ t("div", { className: "embedsy-message bot", children: /* @__PURE__ */ c("div", { className: "embedsy-typing-indicator", children: [
-    /* @__PURE__ */ t("div", { className: "embedsy-typing-dot" }),
-    /* @__PURE__ */ t("div", { className: "embedsy-typing-dot" }),
-    /* @__PURE__ */ t("div", { className: "embedsy-typing-dot" })
-  ] }) });
-}
-function B({ error: e, onRetry: n }) {
-  return e ? /* @__PURE__ */ c("div", { className: "embedsy-error-message", children: [
+function W({ error: t, onRetry: e }) {
+  return t ? /* @__PURE__ */ c("div", { style: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "8px",
+    padding: "10px 14px",
+    background: "rgba(255, 71, 87, 0.08)",
+    border: "1px solid rgba(255, 71, 87, 0.25)",
+    borderRadius: "10px",
+    fontSize: "12px",
+    color: "#ff6b7a",
+    alignSelf: "stretch"
+  }, children: [
     /* @__PURE__ */ c("div", { children: [
-      /* @__PURE__ */ t("strong", { children: "⚠️ Oops!" }),
-      /* @__PURE__ */ t("div", { children: e })
+      /* @__PURE__ */ r("div", { style: { fontWeight: "700", marginBottom: "2px" }, children: "⚠️ Something went wrong" }),
+      /* @__PURE__ */ r("div", { style: { opacity: 0.8 }, children: t })
     ] }),
-    n && /* @__PURE__ */ t(
+    e && /* @__PURE__ */ r(
       "button",
       {
-        onClick: n,
-        className: "embedsy-retry-btn",
+        onClick: e,
+        style: {
+          background: "rgba(255, 71, 87, 0.15)",
+          border: "1px solid rgba(255, 71, 87, 0.3)",
+          borderRadius: "6px",
+          padding: "5px 12px",
+          fontSize: "11px",
+          fontWeight: "600",
+          color: "#ff6b7a",
+          cursor: "pointer",
+          whiteSpace: "nowrap",
+          outline: "none",
+          flexShrink: 0
+        },
         children: "Retry"
       }
     )
   ] }) : null;
 }
-function R({ messages: e, isLoading: n, error: o, onRetry: a }) {
-  const r = v(null), s = v(null), l = () => {
-    r.current && r.current.scrollIntoView({
-      behavior: "smooth",
-      block: "end"
-    });
-  };
-  return y(() => {
-    l();
-  }, [e, n]), /* @__PURE__ */ c("div", { className: "embedsy-messages-container", ref: s, children: [
-    e.map((i) => /* @__PURE__ */ t(T, { message: i }, i.id)),
-    n && /* @__PURE__ */ t(_, {}),
-    o && /* @__PURE__ */ t(B, { error: o, onRetry: a }),
-    /* @__PURE__ */ t("div", { ref: r })
+function B({ messages: t, isLoading: e, error: n, onRetry: a, themeColor: s }) {
+  const o = S(null);
+  return b(() => {
+    o.current && o.current.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [t, e]), /* @__PURE__ */ c("div", { style: {
+    flex: 1,
+    overflowY: "auto",
+    padding: "16px 12px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+    scrollbarWidth: "thin",
+    scrollbarColor: "#333 transparent"
+  }, children: [
+    t.map((l) => /* @__PURE__ */ r(z, { message: l, themeColor: s }, l.id)),
+    e && /* @__PURE__ */ r(O, {}),
+    n && /* @__PURE__ */ r(W, { error: n, onRetry: a }),
+    /* @__PURE__ */ r("div", { ref: o })
   ] });
 }
-function H({ onClick: e, disabled: n }) {
-  return /* @__PURE__ */ t(
+function T({ onClick: t, disabled: e, themeColor: n = "#00FF87" }) {
+  const [a, s] = f(!1);
+  return /* @__PURE__ */ r(
     "button",
     {
-      className: "embedsy-send-btn",
-      onClick: e,
-      disabled: n,
+      onClick: t,
+      disabled: e,
+      onMouseEnter: () => s(!0),
+      onMouseLeave: () => s(!1),
       "aria-label": "Send message",
-      title: "Send message",
-      children: /* @__PURE__ */ t(
-        "svg",
+      style: {
+        width: "38px",
+        height: "38px",
+        borderRadius: "10px",
+        background: n,
+        border: "none",
+        cursor: e ? "not-allowed" : "pointer",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: "#000",
+        opacity: e ? 0.3 : a ? 0.9 : 1,
+        transform: a && !e ? "scale(1.05)" : "scale(1)",
+        transition: "all 0.15s ease",
+        flexShrink: 0,
+        outline: "none",
+        padding: "0"
+      },
+      children: /* @__PURE__ */ r("svg", { width: "16", height: "16", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", children: /* @__PURE__ */ r(
+        "path",
         {
-          fill: "none",
-          stroke: "currentColor",
-          viewBox: "0 0 24 24",
-          xmlns: "http://www.w3.org/2000/svg",
-          children: /* @__PURE__ */ t(
-            "path",
-            {
-              strokeLinecap: "round",
-              strokeLinejoin: "round",
-              strokeWidth: 2.5,
-              d: "M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-            }
-          )
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          strokeWidth: 2.5,
+          d: "M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
         }
-      )
+      ) })
     }
   );
 }
-function K({ onSend: e, disabled: n }) {
-  const [o, a] = h(""), r = v(null);
-  y(() => {
-    !n && r.current && r.current.focus();
-  }, [n]);
-  const s = () => {
-    o.trim() && !n && (e(o.trim()), a(""), r.current && r.current.focus());
+function $({ onSend: t, disabled: e, themeColor: n = "#00FF87" }) {
+  const [a, s] = f(""), [o, l] = f(!1), i = S(null);
+  b(() => {
+    !e && i.current && i.current.focus();
+  }, [e]);
+  const d = () => {
+    a.trim() && !e && (t(a.trim()), s(""), i.current && i.current.focus());
   };
-  return /* @__PURE__ */ c("div", { className: "embedsy-input-container", children: [
-    /* @__PURE__ */ t(
+  return /* @__PURE__ */ c("div", { style: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    padding: "12px",
+    borderTop: "1px solid #1e1e1e",
+    background: "#0f0f0f",
+    flexShrink: 0
+  }, children: [
+    /* @__PURE__ */ r(
       "input",
       {
-        ref: r,
+        ref: i,
         type: "text",
-        className: "embedsy-input",
-        placeholder: "Type your question here...",
-        value: o,
-        onChange: (i) => a(i.target.value),
-        onKeyDown: (i) => {
-          i.key === "Enter" && !i.shiftKey && (i.preventDefault(), s());
+        placeholder: "Ask something...",
+        value: a,
+        onChange: (g) => s(g.target.value),
+        onKeyDown: (g) => {
+          g.key === "Enter" && !g.shiftKey && (g.preventDefault(), d());
         },
-        disabled: n,
-        maxLength: 2e3
+        onFocus: () => l(!0),
+        onBlur: () => l(!1),
+        disabled: e,
+        maxLength: 2e3,
+        style: {
+          flex: 1,
+          background: "#1a1a1a",
+          border: `1px solid ${o ? n : "#2a2a2a"}`,
+          borderRadius: "10px",
+          padding: "10px 14px",
+          fontSize: "13px",
+          color: "#e8e8e8",
+          outline: "none",
+          transition: "border-color 0.2s",
+          fontFamily: "inherit",
+          opacity: e ? 0.5 : 1,
+          cursor: e ? "not-allowed" : "text",
+          boxSizing: "border-box"
+        }
       }
     ),
-    /* @__PURE__ */ t(H, { onClick: s, disabled: n || !o.trim() })
+    /* @__PURE__ */ r(T, { onClick: d, disabled: e || !a.trim(), themeColor: n })
   ] });
 }
-function P({
-  messages: e,
-  isLoading: n,
-  error: o,
+function _({
+  messages: t,
+  isLoading: e,
+  error: n,
   onSend: a,
-  onClose: r,
-  onRetry: s,
+  onClose: s,
+  onRetry: o,
   title: l,
-  selectedLanguage: i,
-  onLanguageChange: m
+  themeColor: i,
+  selectedLanguage: d,
+  onLanguageChange: p
 }) {
-  return /* @__PURE__ */ c("div", { className: "embedsy-chat-window", children: [
-    /* @__PURE__ */ t(
-      D,
+  return /* @__PURE__ */ c("div", { style: {
+    width: "360px",
+    height: "520px",
+    background: "#0f0f0f",
+    borderRadius: "16px",
+    border: "1px solid #222",
+    display: "flex",
+    flexDirection: "column",
+    overflow: "hidden",
+    boxShadow: "0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04)",
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+  }, children: [
+    /* @__PURE__ */ r(
+      L,
       {
-        onClose: r,
+        onClose: s,
         title: l,
-        selectedLanguage: i,
-        onLanguageChange: m
+        themeColor: i,
+        selectedLanguage: d,
+        onLanguageChange: p
       }
     ),
-    /* @__PURE__ */ t(
-      R,
+    /* @__PURE__ */ r(
+      B,
       {
-        messages: e,
-        isLoading: n,
-        error: o,
-        onRetry: s
+        messages: t,
+        isLoading: e,
+        error: n,
+        onRetry: o,
+        themeColor: i
       }
     ),
-    /* @__PURE__ */ t(K, { onSend: a, disabled: n }),
-    /* @__PURE__ */ c("div", { className: "embedsy-powered-by", children: [
-      "Powered by ",
-      /* @__PURE__ */ t("a", { href: "https://embedsy.dev", target: "_blank", rel: "noopener noreferrer", children: "Embedsy" })
+    /* @__PURE__ */ r($, { onSend: a, disabled: e, themeColor: i }),
+    /* @__PURE__ */ c("div", { style: {
+      textAlign: "center",
+      fontSize: "10px",
+      color: "#333",
+      padding: "6px",
+      background: "#0a0a0a",
+      flexShrink: 0
+    }, children: [
+      "Powered by",
+      " ",
+      /* @__PURE__ */ r(
+        "a",
+        {
+          href: "https://embedsy.dev",
+          target: "_blank",
+          rel: "noopener noreferrer",
+          style: { color: i, textDecoration: "none" },
+          children: "Embedsy"
+        }
+      )
     ] })
   ] });
 }
-const M = "embedsy_messages", W = (e, n) => {
+const v = "embedsy_messages", H = (t, e) => {
   try {
-    const o = `${M}_${e}`;
-    localStorage.setItem(o, JSON.stringify({ messages: n, timestamp: (/* @__PURE__ */ new Date()).toISOString() }));
-  } catch (o) {
-    console.warn("Embedsy: Failed to save messages:", o);
-  }
-}, J = (e) => {
-  try {
-    const n = `${M}_${e}`, o = localStorage.getItem(n);
-    if (!o) return [];
-    const a = JSON.parse(o), r = Date.now() - new Date(a.timestamp).getTime(), s = 24 * 60 * 60 * 1e3;
-    return r > s ? (localStorage.removeItem(n), []) : a.messages || [];
+    const n = `${v}_${t}`;
+    localStorage.setItem(n, JSON.stringify({ messages: e, timestamp: (/* @__PURE__ */ new Date()).toISOString() }));
   } catch (n) {
-    return console.warn("Embedsy: Failed to load messages:", n), [];
+    console.warn("Embedsy: Failed to save messages:", n);
   }
-}, z = (e) => {
-  const [n, o] = h([]);
-  return y(() => {
-    if (e) {
-      const s = J(e);
-      s.length > 0 ? o(s) : o([
+}, j = (t) => {
+  try {
+    const e = `${v}_${t}`, n = localStorage.getItem(e);
+    if (!n) return [];
+    const a = JSON.parse(n), s = Date.now() - new Date(a.timestamp).getTime(), o = 24 * 60 * 60 * 1e3;
+    return s > o ? (localStorage.removeItem(e), []) : a.messages || [];
+  } catch (e) {
+    return console.warn("Embedsy: Failed to load messages:", e), [];
+  }
+}, K = (t) => {
+  const [e, n] = f([]);
+  return b(() => {
+    if (t) {
+      const o = j(t);
+      o.length > 0 ? n(o) : n([
         {
           id: `msg_${Date.now()}`,
           role: "bot",
@@ -317,19 +496,19 @@ const M = "embedsy_messages", W = (e, n) => {
         }
       ]);
     }
-  }, [e]), y(() => {
-    e && n.length > 0 && W(e, n);
-  }, [n, e]), { messages: n, addMessage: (s) => {
-    o((l) => [
+  }, [t]), b(() => {
+    t && e.length > 0 && H(t, e);
+  }, [e, t]), { messages: e, addMessage: (o) => {
+    n((l) => [
       ...l,
       {
-        ...s,
+        ...o,
         id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        timestamp: s.timestamp || (/* @__PURE__ */ new Date()).toISOString()
+        timestamp: o.timestamp || (/* @__PURE__ */ new Date()).toISOString()
       }
     ]);
   }, clearAllMessages: () => {
-    o([
+    n([
       {
         id: `msg_${Date.now()}`,
         role: "bot",
@@ -338,96 +517,97 @@ const M = "embedsy_messages", W = (e, n) => {
       }
     ]);
   } };
-}, G = async (e, n, o, a = "en", r) => {
+}, N = async (t, e, n, a = "en", s) => {
   try {
-    const s = await fetch(`${r}/chat`, {
+    const o = await fetch(`${s}/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        projectId: e,
-        message: n,
-        apiKey: o,
+        projectId: t,
+        message: e,
+        apiKey: n,
         targetLanguage: a
       })
     });
-    if (!s.ok) {
-      const l = await s.json();
+    if (!o.ok) {
+      const l = await o.json();
       throw new Error(l.error || "Failed to get response from server");
     }
-    return await s.json();
-  } catch (s) {
-    throw s.name === "TypeError" ? new Error("No response from server. Please check your connection.") : s;
+    return await o.json();
+  } catch (o) {
+    throw o.name === "TypeError" ? new Error("No response from server. Please check your connection.") : o;
   }
-}, U = (e, n, o, a, r) => {
-  const [s, l] = h(!1), [i, m] = h(null);
-  return { send: async (b) => {
-    if (!(!b.trim() || s)) {
-      l(!0), m(null);
+}, U = (t, e, n, a, s) => {
+  const [o, l] = f(!1), [i, d] = f(null);
+  return { send: async (h) => {
+    if (!(!h.trim() || o)) {
+      l(!0), d(null);
       try {
-        const u = await G(e, b, n, o, r);
-        return a && a(u), u;
-      } catch (u) {
-        throw m(u.message), u;
+        const x = await N(t, h, e, n, s);
+        return a && a(x), x;
+      } catch (x) {
+        throw d(x.message), x;
       } finally {
         l(!1);
       }
     }
-  }, isLoading: s, error: i, clearError: () => m(null) };
-}, j = "https://embedsy-backend.onrender.com/api";
+  }, isLoading: o, error: i, clearError: () => d(null) };
+}, J = "https://embedsy-backend.onrender.com/api";
 function V({
-  projectId: e,
-  apiKey: n,
-  title: o = "Chat with us",
+  projectId: t,
+  apiKey: e,
+  title: n = "Chat with us",
   position: a = "bottom-right",
-  themeColor: r = "#00FF87",
-  apiUrl: s = j
+  themeColor: s = "#00FF87",
+  apiUrl: o = J
 }) {
-  const [l, i] = h(!1), [m, N] = h("en"), { messages: p, addMessage: b, clearAllMessages: u } = z(e);
-  y(() => {
-    const d = `embedsy-root-${e}`, g = document.getElementById(d) || document.getElementById("embedsy-widget-root");
-    g && g.style.setProperty("--embedsy-theme", r);
-  }, [r, e]);
-  const C = (d) => {
-    b({
+  const [l, i] = f(!1), [d, p] = f("en"), { messages: g, addMessage: h, clearAllMessages: x } = K(t), I = (u) => {
+    h({
       role: "bot",
-      content: d.answer,
-      sources: d.sources,
-      confidence: d.confidence
+      content: u.answer,
+      sources: u.sources,
+      confidence: u.confidence
     });
-  }, { send: k, isLoading: E, error: x, clearError: S } = U(
+  }, { send: w, isLoading: M, error: E, clearError: k } = U(
+    t,
     e,
-    n,
-    m,
-    C,
-    s
-  ), F = async (d) => {
-    b({ role: "user", content: d }), S();
+    d,
+    I,
+    o
+  ), F = async (u) => {
+    h({ role: "user", content: u }), k();
     try {
-      await k(d);
-    } catch (g) {
-      console.error("Embedsy: Failed to send message:", g);
+      await w(u);
+    } catch (m) {
+      console.error("Embedsy: Failed to send message:", m);
     }
-  }, I = () => {
-    const d = [...p].reverse().find((g) => g.role === "user");
-    d && (S(), k(d.content));
-  }, L = (d) => {
-    N(d), u();
+  }, D = () => {
+    const u = [...g].reverse().find((m) => m.role === "user");
+    u && (k(), w(u.content));
+  }, R = (u) => {
+    p(u), x();
   };
-  return /* @__PURE__ */ t("div", { className: `embedsy-widget-container embedsy-position-${a}`, children: l ? /* @__PURE__ */ t(
-    P,
+  return /* @__PURE__ */ r("div", { style: {
+    position: "fixed",
+    zIndex: 999999,
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    ...a === "bottom-left" ? { bottom: "24px", left: "24px" } : { bottom: "24px", right: "24px" }
+  }, children: l ? /* @__PURE__ */ r(
+    _,
     {
-      messages: p,
-      isLoading: E,
-      error: x,
+      messages: g,
+      isLoading: M,
+      error: E,
       onSend: F,
       onClose: () => i(!1),
-      onRetry: I,
-      onClear: u,
-      title: o,
-      selectedLanguage: m,
-      onLanguageChange: L
+      onRetry: D,
+      onClear: x,
+      title: n,
+      themeColor: s,
+      selectedLanguage: d,
+      onLanguageChange: R
     }
-  ) : /* @__PURE__ */ t(A, { onClick: () => i(!0) }) });
+  ) : /* @__PURE__ */ r(C, { onClick: () => i(!0), themeColor: s }) });
 }
 export {
   V as EmbedsynWidget

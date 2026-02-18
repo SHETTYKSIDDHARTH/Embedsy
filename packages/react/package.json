@@ -1,6 +1,6 @@
 {
   "name": "@embedsy/react",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Embedsy AI chat widget for React apps",
   "keywords": ["embedsy", "chat", "widget", "ai", "react"],
   "homepage": "https://github.com/yourusername/embedsy",

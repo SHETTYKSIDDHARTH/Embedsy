@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ChatBubble from './components/ChatBubble';
 import ChatWindow from './components/ChatWindow';
 import { useMessages } from './hooks/useMessages';
 import { useChat } from './hooks/useChat';
-import './styles/widget.css';
 
 const DEFAULT_API_URL = 'https://embedsy-backend.onrender.com/api';
 
@@ -15,7 +14,7 @@ const DEFAULT_API_URL = 'https://embedsy-backend.onrender.com/api';
  * @param {string}  title       - Widget title shown in header
  * @param {string}  position    - 'bottom-right' | 'bottom-left' (default: 'bottom-right')
  * @param {string}  themeColor  - Hex color for the widget accent (default: '#00FF87')
- * @param {string}  apiUrl      - Override the backend URL (optional)
+ * @param {string}  apiUrl      - Override the backend URL (optional, for self-hosting)
  */
 export default function EmbedsynWidget({
   projectId,
@@ -29,17 +28,6 @@ export default function EmbedsynWidget({
   const [selectedLanguage, setSelectedLanguage] = useState('en');
   const { messages, addMessage, clearAllMessages } = useMessages(projectId);
 
-  // Apply themeColor as a CSS variable scoped to the widget container
-  useEffect(() => {
-    const containerId = `embedsy-root-${projectId}`;
-    const container =
-      document.getElementById(containerId) ||
-      document.getElementById('embedsy-widget-root');
-    if (container) {
-      container.style.setProperty('--embedsy-theme', themeColor);
-    }
-  }, [themeColor, projectId]);
-
   const handleMessageReceived = (response) => {
     addMessage({
       role: 'bot',
@@ -50,11 +38,7 @@ export default function EmbedsynWidget({
   };
 
   const { send, isLoading, error, clearError } = useChat(
-    projectId,
-    apiKey,
-    selectedLanguage,
-    handleMessageReceived,
-    apiUrl
+    projectId, apiKey, selectedLanguage, handleMessageReceived, apiUrl
   );
 
   const handleSend = async (message) => {
@@ -80,8 +64,17 @@ export default function EmbedsynWidget({
     clearAllMessages();
   };
 
+  const positionStyle = position === 'bottom-left'
+    ? { bottom: '24px', left: '24px' }
+    : { bottom: '24px', right: '24px' };
+
   return (
-    <div className={`embedsy-widget-container embedsy-position-${position}`}>
+    <div style={{
+      position: 'fixed',
+      zIndex: 999999,
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      ...positionStyle,
+    }}>
       {isOpen ? (
         <ChatWindow
           messages={messages}
@@ -92,11 +85,12 @@ export default function EmbedsynWidget({
           onRetry={handleRetry}
           onClear={clearAllMessages}
           title={title}
+          themeColor={themeColor}
           selectedLanguage={selectedLanguage}
           onLanguageChange={handleLanguageChange}
         />
       ) : (
-        <ChatBubble onClick={() => setIsOpen(true)} />
+        <ChatBubble onClick={() => setIsOpen(true)} themeColor={themeColor} />
       )}
     </div>
   );
