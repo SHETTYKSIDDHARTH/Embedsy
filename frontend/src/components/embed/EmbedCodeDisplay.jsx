@@ -16,7 +16,7 @@ export default function App() {
     <>
       {/* Your app content */}
 
-      <EmbedsyWidget
+      <EmbedsynWidget
         projectId="${project.id}"
         apiKey="${project.api_key}"
         title="${project.widget_title || project.name}"
@@ -45,7 +45,7 @@ export default function Page() {
     <>
       {/* Your page content */}
 
-      <EmbedsyWidget
+      <EmbedsynWidget
         projectId="${project.id}"
         apiKey="${project.api_key}"
         title="${project.widget_title || project.name}"
