@@ -9,7 +9,7 @@ export default function EmbedCodeDisplay({ project }) {
   // ── React snippet ─────────────────────────────────────
   const reactInstall = `npm install @embedsy/react`;
 
-  const reactSnippet = `import { EmbedsyWidget } from '@embedsy/react';
+  const reactSnippet = `import { EmbedsynWidget } from '@embedsy/react';
 
 export default function App() {
   return (
@@ -36,7 +36,7 @@ import dynamic from 'next/dynamic';
 
 // Load widget client-side only (no SSR)
 const EmbedsyWidget = dynamic(
-  () => import('@embedsy/react').then(m => m.EmbedsyWidget),
+  () => import('@embedsy/react').then(m => m.EmbedsynWidget),
   { ssr: false }
 );
 
