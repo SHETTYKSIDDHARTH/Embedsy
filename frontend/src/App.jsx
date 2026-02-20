@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Layout from './components/layout/Layout';
+import Landing from './pages/Landing';          // ← NEW
 import Dashboard from './pages/Dashboard';
 import ProjectDetail from './pages/ProjectDetail';
 import Upload from './pages/Upload';
@@ -38,18 +39,24 @@ function GuestRoute({ children }) {
 function AppRoutes() {
   return (
     <Routes>
-      {/* Guest only */}
-      <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
+      {/* ── Public landing page ── */}
+      <Route path="/" element={<Landing />} />
+
+      {/* ── Guest only ── */}
+      <Route path="/login"  element={<GuestRoute><Login /></GuestRoute>} />
       <Route path="/signup" element={<GuestRoute><Signup /></GuestRoute>} />
 
-      {/* Protected */}
-      <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-        <Route index element={<Navigate to="/dashboard" replace />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="projects/:projectId" element={<ProjectDetail />} />
-        <Route path="projects/:projectId/upload" element={<Upload />} />
-        <Route path="projects/:projectId/embed" element={<Embed />} />
+      {/* ── Protected app shell ── */}
+      <Route path="/app" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+        <Route index                                  element={<Navigate to="/app/dashboard" replace />} />
+        <Route path="dashboard"                       element={<Dashboard />} />
+        <Route path="projects/:projectId"             element={<ProjectDetail />} />
+        <Route path="projects/:projectId/upload"      element={<Upload />} />
+        <Route path="projects/:projectId/embed"       element={<Embed />} />
       </Route>
+
+      {/* Legacy redirect — keeps old /dashboard bookmark working */}
+      <Route path="/dashboard" element={<ProtectedRoute><Navigate to="/app/dashboard" replace /></ProtectedRoute>} />
 
       <Route path="*" element={<NotFound />} />
     </Routes>
