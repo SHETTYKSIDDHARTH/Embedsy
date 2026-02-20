@@ -84,12 +84,9 @@
 //   );
 // }
 
-
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useProjects } from '../hooks/useProjects';
-import ProjectList from '../components/dashboard/ProjectList';
-import CreateProject from '../components/dashboard/CreateProject';
-import StatsCard from '../components/dashboard/StatsCard';
 import { ToastContainer, useToast } from '../components/common/Toast';
 
 const dashStyles = `
@@ -310,9 +307,12 @@ function StatCard({ label, value, iconPath, accentColor, delay = 0 }) {
 /* ─────────────────────────────────────────
    PROJECT CARD
 ───────────────────────────────────────── */
-function ProjectCard({ project, onDelete, onClick }) {
+function ProjectCard({ project, onDelete, projectRoute }) {
+  const navigate = useNavigate();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const themeColor = project.theme_color || G;
+
+  const goToProject = () => navigate(projectRoute || `/dashboard/projects/${project.id}`);
 
   const handleDeleteClick = (e) => {
     e.stopPropagation();
@@ -325,7 +325,7 @@ function ProjectCard({ project, onDelete, onClick }) {
   };
 
   return (
-    <div className="db-project-card" onClick={onClick} style={{ position: "relative" }}>
+    <div className="db-project-card" onClick={goToProject} style={{ position: "relative" }}>
       {/* top row */}
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "1rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: ".7rem", minWidth: 0 }}>
@@ -353,9 +353,9 @@ function ProjectCard({ project, onDelete, onClick }) {
       {/* meta row */}
       <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
         {[
-          { label: "Chunks", value: project.chunkCount ?? 0 },
+          { label: "Chunks",  value: project.chunkCount ?? 0   },
           { label: "Queries", value: project.queryCount ?? "—" },
-          { label: "Docs", value: project.docCount ?? 0 },
+          { label: "Docs",    value: project.docCount   ?? 0   },
         ].map(({ label, value }) => (
           <div key={label}>
             <div style={{ fontFamily: "'DM Mono',monospace", fontSize: ".65rem", color: "rgba(245,245,245,.3)", letterSpacing: ".08em", textTransform: "uppercase", marginBottom: ".15rem" }}>{label}</div>
@@ -369,9 +369,12 @@ function ProjectCard({ project, onDelete, onClick }) {
         <span style={{ fontFamily: "'DM Mono',monospace", fontSize: ".68rem", color: "rgba(245,245,245,.25)", letterSpacing: ".04em" }}>
           {project.created_at ? new Date(project.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}
         </span>
-        <div style={{ display: "flex", gap: ".5rem" }} onClick={e => e.stopPropagation()}>
-          <button className="db-btn-ghost" style={{ fontSize: ".75rem", padding: ".4rem .75rem" }}
-            onClick={(e) => { e.stopPropagation(); onClick && onClick(); }}>
+        <div style={{ display: "flex", gap: ".5rem" }}>
+          <button
+            className="db-btn-ghost"
+            style={{ fontSize: ".75rem", padding: ".4rem .75rem" }}
+            onClick={(e) => { e.stopPropagation(); goToProject(); }}
+          >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
             Manage
           </button>
@@ -523,7 +526,7 @@ function Toast({ message, type = "success", onRemove }) {
 /* ─────────────────────────────────────────
    PROJECT LIST / EMPTY / LOADING
 ───────────────────────────────────────── */
-function ProjectGrid({ projects, loading, error, onDelete, onSelect }) {
+function ProjectGrid({ projects, loading, error, onDelete }) {
   if (loading) return (
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "4rem", gap: ".75rem", color: "rgba(245,245,245,.4)", fontFamily: "'DM Mono',monospace", fontSize: ".78rem" }}>
       <span className="db-spinner" />
@@ -552,7 +555,7 @@ function ProjectGrid({ projects, loading, error, onDelete, onSelect }) {
     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 340px), 1fr))", gap: "1.25rem" }}>
       {projects.map((p, i) => (
         <div key={p.id} style={{ animation: `db-fadeUp .4s ${i * 0.06}s both` }}>
-          <ProjectCard project={p} onDelete={onDelete} onClick={() => onSelect && onSelect(p)} />
+          <ProjectCard project={p} onDelete={onDelete} projectRoute={`/dashboard/projects/${p.id}`} />
         </div>
       ))}
     </div>
