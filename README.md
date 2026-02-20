@@ -778,19 +778,6 @@ VITE_API_URL=https://api.yourdomain.com/api npm run build
 
 ---
 
-## Known Limitations & Design Decisions
-
-**Hash embeddings have no semantic understanding.** Paraphrase and synonym matching will be weak — two sentences that mean the same thing but use different words won't match. This is a deliberate starting point that requires no external API or model. To upgrade, replace `backend/src/services/embedding.js` with an OpenAI `text-embedding-3-small` call or a local `@xenova/transformers` model. Everything else in the pipeline stays the same.
-
-**Embeddings stored as serialized text strings.** Vectors are inserted as `[0.1,0.2,...]` and cast to `vector` inside the `match_embeddings` RPC. Functional, but not as efficient as native pgvector array input. A future version should use pgvector's native binding.
-
-**No streaming responses.** The `/api/chat` endpoint waits for the full Groq completion before responding. Groq's SDK supports streaming — adding it to `llm.js` and the chat route would noticeably cut perceived latency on longer answers.
-
-**Chat endpoint API key not enforced server-side.** `validateApiKey` middleware exists in `auth.js` but is not currently wired to the chat route. Any caller with a valid `projectId` can query any project's corpus. Wiring the middleware in `chat.js` is a one-line fix.
-
-**Widget bundle size for React apps.** The IIFE build inlines React and ReactDOM (~150–200 KB gzipped). If you're already running React 18 in your app, use the component source directly and share the host app's React instance — don't use the compiled bundle.
-
----
 
 ## Contributing
 
@@ -800,4 +787,4 @@ If you've used Embedsy to ship something, found a bug, or have an idea for the p
 
 Made with ❤️ by [SHETTYKSIDDHARTH](https://github.com/SHETTYKSIDDHARTH)
 
-If this saved you time on a project, give it a ⭐ — it helps others find it.
+If this saved you time on a project, give it a ⭐ 
