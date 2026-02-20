@@ -1,85 +1,165 @@
-import React, { useState } from 'react';
-import { useProjects } from '../hooks/useProjects';
-import ProjectList from '../components/dashboard/ProjectList';
-import CreateProject from '../components/dashboard/CreateProject';
-import StatsCard from '../components/dashboard/StatsCard';
-import Button from '../components/common/Button';
-import { ToastContainer, useToast } from '../components/common/Toast';
+import React from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
-export default function Dashboard() {
-  const { projects, loading, error, create, remove } = useProjects();
-  const [showCreate, setShowCreate] = useState(false);
-  const { toasts, addToast, removeToast } = useToast();
+const sidebarStyles = `
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
 
-  const totalChunks = projects.reduce((sum, p) => sum + (p.chunkCount || 0), 0);
+  .sb-wrap, .sb-wrap * { box-sizing: border-box; }
+  .sb-wrap { font-family: 'Syne', sans-serif; }
 
-  const handleCreate = async (payload) => {
-    await create(payload);
-    addToast('Project created successfully!', 'success');
+  @keyframes sb-pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
+  .sb-pulse { animation: sb-pulse 2s ease-in-out infinite; }
+
+  .sb-nav-link {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    padding: .55rem .75rem;
+    border-radius: 5px;
+    font-size: .82rem;
+    font-weight: 600;
+    letter-spacing: -.01em;
+    color: rgba(245,245,245,.4);
+    text-decoration: none;
+    transition: color .2s, background .2s;
+    border: 1px solid transparent;
+  }
+  .sb-nav-link:hover {
+    color: rgba(245,245,245,.8);
+    background: rgba(255,255,255,.04);
+  }
+  .sb-nav-link.active {
+    color: #00FF87;
+    background: rgba(0,255,135,.07);
+    border-color: rgba(0,255,135,.15);
+  }
+
+  .sb-signout {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .5rem .75rem;
+    border-radius: 5px;
+    background: none;
+    border: none;
+    width: 100%;
+    font-family: 'Syne', sans-serif;
+    font-size: .8rem;
+    font-weight: 500;
+    color: rgba(245,245,245,.3);
+    cursor: pointer;
+    transition: color .2s, background .2s;
+    text-align: left;
+  }
+  .sb-signout:hover {
+    color: #f87171;
+    background: rgba(248,113,113,.07);
+  }
+`;
+
+const navItems = [
+  {
+    to: '/app/dashboard',
+    label: 'Dashboard',
+    icon: (
+      <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+      </svg>
+    ),
+  },
+];
+
+export default function Sidebar({ onClose }) {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/login');
   };
 
-  const handleDelete = async (id) => {
-    await remove(id);
-    addToast('Project deleted', 'info');
-  };
+  const G = '#00FF87';
+  const border = 'rgba(255,255,255,.06)';
 
   return (
     <>
-      <div className="flex flex-col gap-6 max-w-6xl">
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <StatsCard
-            label="Total Projects"
-            value={projects.length}
-            color="brand"
-            icon={
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
-                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+      <style>{sidebarStyles}</style>
+      <aside
+        className="sb-wrap"
+        style={{
+          width: 220, height: '100%', background: '#0D0D0D',
+          borderRight: `1px solid ${border}`,
+          display: 'flex', flexDirection: 'column',
+        }}
+      >
+        {/* ── LOGO ── */}
+        <div style={{ height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.1rem', borderBottom: `1px solid ${border}`, flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '.45rem' }}>
+            <span className="sb-pulse" style={{ display: 'inline-block', width: 7, height: 7, background: G, borderRadius: '50%' }} />
+            <span style={{ fontWeight: 800, fontSize: '1rem', letterSpacing: '-.03em', color: '#f5f5f5' }}>Embedsy</span>
+          </div>
+          {/* mobile close button */}
+          {onClose && (
+            <button
+              onClick={onClose}
+              style={{ background: 'none', border: 'none', color: 'rgba(245,245,245,.3)', cursor: 'pointer', padding: '.25rem', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              aria-label="Close sidebar"
+            >
+              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="M18 6L6 18M6 6l12 12" />
               </svg>
-            }
-          />
-          <StatsCard
-            label="Total Chunks"
-            value={totalChunks}
-            color="blue"
-            icon={
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
-                  d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
-              </svg>
-            }
-          />
-          <StatsCard
-            label="Widgets Deployed"
-            value={projects.length}
-            color="purple"
-            icon={
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
-                  d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-              </svg>
-            }
-          />
+            </button>
+          )}
         </div>
 
-        {/* Header row */}
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-white">Your Projects</h2>
-          <Button onClick={() => setShowCreate(true)}>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+        {/* ── NAV ── */}
+        <nav style={{ flex: 1, padding: '.75rem .65rem', display: 'flex', flexDirection: 'column', gap: '.2rem', overflowY: 'auto' }}>
+          <p style={{ fontFamily: "'DM Mono',monospace", fontSize: '.58rem', letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(245,245,245,.2)', padding: '.4rem .75rem', marginBottom: '.15rem' }}>
+            Main
+          </p>
+          {navItems.map(item => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) => `sb-nav-link${isActive ? ' active' : ''}`}
+              onClick={onClose}
+            >
+              {item.icon}
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
+
+        {/* ── USER FOOTER ── */}
+        <div style={{ padding: '.75rem .65rem', borderTop: `1px solid ${border}`, flexShrink: 0 }}>
+          {/* user row */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '.6rem', padding: '.5rem .75rem', marginBottom: '.25rem' }}>
+            <div style={{
+              width: 28, height: 28, borderRadius: '50%',
+              background: 'rgba(0,255,135,.12)', border: '1px solid rgba(0,255,135,.2)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+            }}>
+              <span style={{ fontFamily: "'Syne',sans-serif", fontSize: '.75rem', fontWeight: 800, color: G }}>
+                {user?.email?.[0]?.toUpperCase()}
+              </span>
+            </div>
+            <span style={{ fontFamily: "'DM Mono',monospace", fontSize: '.67rem', color: 'rgba(245,245,245,.35)', letterSpacing: '.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+              {user?.email}
+            </span>
+          </div>
+
+          <button className="sb-signout" onClick={handleSignOut}>
+            <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+              <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
-            New Project
-          </Button>
+            Sign out
+          </button>
         </div>
-
-        {/* List */}
-        <ProjectList projects={projects} loading={loading} error={error} onDelete={handleDelete} />
-      </div>
-
-      <CreateProject isOpen={showCreate} onClose={() => setShowCreate(false)} onCreate={handleCreate} />
-      <ToastContainer toasts={toasts} removeToast={removeToast} />
+      </aside>
     </>
   );
 }
