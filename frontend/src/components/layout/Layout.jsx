@@ -16,13 +16,18 @@
 //     </div>
 //   );
 // }
-
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 
 const layoutStyles = `
   .layout-wrap, .layout-wrap * { box-sizing: border-box; }
+
+  .layout-sidebar-wrap {
+    width: 220px;
+    flex-shrink: 0;
+    position: relative;
+  }
 
   .layout-overlay {
     display: none;
@@ -31,9 +36,7 @@ const layoutStyles = `
     background: rgba(0,0,0,.6);
     backdrop-filter: blur(4px);
     z-index: 30;
-    animation: overlay-in .2s both;
   }
-  @keyframes overlay-in { from{opacity:0} to{opacity:1} }
   .layout-overlay.open { display: block; }
 
   .layout-hamburger {
@@ -48,30 +51,35 @@ const layoutStyles = `
     flex-shrink: 0;
   }
   .layout-hamburger span {
-    display: block; width: 18px; height: 1.5px;
+    display: block;
+    width: 18px;
+    height: 1.5px;
     background: rgba(245,245,245,.6);
     border-radius: 2px;
-    transition: all .2s;
+    transition: all .25s;
   }
   .layout-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
   .layout-hamburger.open span:nth-child(2) { opacity: 0; }
   .layout-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 
+  .layout-mobile-brand { display: none; }
+
   @media (max-width: 768px) {
-    .layout-sidebar {
+    .layout-sidebar-wrap {
       position: fixed !important;
-      left: -240px !important;
-      top: 0 !important;
-      bottom: 0 !important;
-      z-index: 40 !important;
-      transition: left .25s ease !important;
+      left: -220px;
+      top: 0;
+      bottom: 0;
+      z-index: 40;
+      transition: left .25s ease;
+      width: 220px !important;
     }
-    .layout-sidebar.open {
-      left: 0 !important;
-      box-shadow: 4px 0 40px rgba(0,0,0,.6) !important;
+    .layout-sidebar-wrap.open {
+      left: 0;
+      box-shadow: 4px 0 40px rgba(0,0,0,.6);
     }
     .layout-hamburger { display: flex !important; }
-    .layout-topbar-title { display: block !important; }
+    .layout-mobile-brand { display: block !important; }
   }
 `;
 
@@ -81,26 +89,37 @@ export default function Layout() {
   return (
     <>
       <style>{layoutStyles}</style>
-      <div className="layout-wrap" style={{ display: 'flex', height: '100vh', background: '#0A0A0A', color: '#f5f5f5', overflow: 'hidden' }}>
-
-        {/* Mobile overlay */}
+      <div
+        className="layout-wrap"
+        style={{
+          display: 'flex',
+          height: '100vh',
+          background: '#0A0A0A',
+          color: '#f5f5f5',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Mobile backdrop */}
         <div
           className={`layout-overlay${sidebarOpen ? ' open' : ''}`}
           onClick={() => setSidebarOpen(false)}
         />
 
         {/* Sidebar */}
-        <div className={`layout-sidebar${sidebarOpen ? ' open' : ''}`} style={{ width: 220, flexShrink: 0 }}>
+        <div className={`layout-sidebar-wrap${sidebarOpen ? ' open' : ''}`}>
           <Sidebar onClose={() => setSidebarOpen(false)} />
         </div>
 
-        {/* Main content */}
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+        {/* Right side */}
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', minWidth: 0 }}>
 
-          {/* Top bar (mobile only hamburger) */}
+          {/* Mobile topbar */}
           <header style={{
-            height: 52, flexShrink: 0,
-            display: 'flex', alignItems: 'center', gap: '1rem',
+            height: 52,
+            flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
             padding: '0 1.25rem',
             borderBottom: '1px solid rgba(255,255,255,.06)',
             background: '#0D0D0D',
@@ -112,14 +131,26 @@ export default function Layout() {
             >
               <span /><span /><span />
             </button>
-            {/* Brand on mobile */}
-            <span className="layout-topbar-title" style={{ display: 'none', fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: '1rem', letterSpacing: '-.03em', color: '#f5f5f5' }}>
+            <span
+              className="layout-mobile-brand"
+              style={{
+                fontFamily: "'Syne',sans-serif",
+                fontWeight: 800,
+                fontSize: '1rem',
+                letterSpacing: '-.03em',
+                color: '#f5f5f5',
+              }}
+            >
               Embedsy
             </span>
           </header>
 
-          {/* Page content */}
-          <main style={{ flex: 1, overflowY: 'auto', padding: 'clamp(1.25rem,3vw,2rem)' }}>
+          {/* Page */}
+          <main style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: 'clamp(1.25rem, 3vw, 2rem)',
+          }}>
             <Outlet />
           </main>
         </div>

@@ -75,8 +75,6 @@
 //     </aside>
 //   );
 // }
-
-
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -170,22 +168,44 @@ export default function Sidebar({ onClose }) {
       <aside
         className="sb-wrap"
         style={{
-          width: 220, height: '100%', background: '#0D0D0D',
+          width: 220,
+          height: '100%',
+          background: '#0D0D0D',
           borderRight: `1px solid ${border}`,
-          display: 'flex', flexDirection: 'column',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
-        {/* ── LOGO ── */}
-        <div style={{ height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.1rem', borderBottom: `1px solid ${border}`, flexShrink: 0 }}>
+        {/* LOGO */}
+        <div style={{
+          height: 52,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0 1.1rem',
+          borderBottom: `1px solid ${border}`,
+          flexShrink: 0,
+        }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '.45rem' }}>
             <span className="sb-pulse" style={{ display: 'inline-block', width: 7, height: 7, background: G, borderRadius: '50%' }} />
-            <span style={{ fontWeight: 800, fontSize: '1rem', letterSpacing: '-.03em', color: '#f5f5f5' }}>Embedsy</span>
+            <span style={{ fontWeight: 800, fontSize: '1rem', letterSpacing: '-.03em', color: '#f5f5f5' }}>
+              Embedsy
+            </span>
           </div>
-          {/* mobile close button */}
           {onClose && (
             <button
               onClick={onClose}
-              style={{ background: 'none', border: 'none', color: 'rgba(245,245,245,.3)', cursor: 'pointer', padding: '.25rem', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'rgba(245,245,245,.3)',
+                cursor: 'pointer',
+                padding: '.25rem',
+                borderRadius: 4,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
               aria-label="Close sidebar"
             >
               <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -195,9 +215,24 @@ export default function Sidebar({ onClose }) {
           )}
         </div>
 
-        {/* ── NAV ── */}
-        <nav style={{ flex: 1, padding: '.75rem .65rem', display: 'flex', flexDirection: 'column', gap: '.2rem', overflowY: 'auto' }}>
-          <p style={{ fontFamily: "'DM Mono',monospace", fontSize: '.58rem', letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(245,245,245,.2)', padding: '.4rem .75rem', marginBottom: '.15rem' }}>
+        {/* NAV */}
+        <nav style={{
+          flex: 1,
+          padding: '.75rem .65rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '.2rem',
+          overflowY: 'auto',
+        }}>
+          <p style={{
+            fontFamily: "'DM Mono',monospace",
+            fontSize: '.58rem',
+            letterSpacing: '.12em',
+            textTransform: 'uppercase',
+            color: 'rgba(245,245,245,.2)',
+            padding: '.4rem .75rem',
+            marginBottom: '.15rem',
+          }}>
             Main
           </p>
           {navItems.map(item => (
@@ -213,20 +248,45 @@ export default function Sidebar({ onClose }) {
           ))}
         </nav>
 
-        {/* ── USER FOOTER ── */}
+        {/* USER FOOTER */}
         <div style={{ padding: '.75rem .65rem', borderTop: `1px solid ${border}`, flexShrink: 0 }}>
-          {/* user row */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '.6rem', padding: '.5rem .75rem', marginBottom: '.25rem' }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '.6rem',
+            padding: '.5rem .75rem',
+            marginBottom: '.25rem',
+          }}>
             <div style={{
-              width: 28, height: 28, borderRadius: '50%',
-              background: 'rgba(0,255,135,.12)', border: '1px solid rgba(0,255,135,.2)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              width: 28,
+              height: 28,
+              borderRadius: '50%',
+              background: 'rgba(0,255,135,.12)',
+              border: '1px solid rgba(0,255,135,.2)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
             }}>
-              <span style={{ fontFamily: "'Syne',sans-serif", fontSize: '.75rem', fontWeight: 800, color: G }}>
+              <span style={{
+                fontFamily: "'Syne',sans-serif",
+                fontSize: '.75rem',
+                fontWeight: 800,
+                color: G,
+              }}>
                 {user?.email?.[0]?.toUpperCase()}
               </span>
             </div>
-            <span style={{ fontFamily: "'DM Mono',monospace", fontSize: '.67rem', color: 'rgba(245,245,245,.35)', letterSpacing: '.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+            <span style={{
+              fontFamily: "'DM Mono',monospace",
+              fontSize: '.67rem',
+              color: 'rgba(245,245,245,.35)',
+              letterSpacing: '.02em',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              flex: 1,
+            }}>
               {user?.email}
             </span>
           </div>

@@ -1,169 +1,220 @@
-import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import React, { useState } from 'react';
+import { useProjects } from '../hooks/useProjects';
+import ProjectList from '../components/dashboard/ProjectList';
+import CreateProject from '../components/dashboard/CreateProject';
+import { ToastContainer, useToast } from '../components/common/Toast';
 
-const sidebarStyles = `
+const dashStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
 
-  .sb-wrap, .sb-wrap * { box-sizing: border-box; }
-  .sb-wrap { font-family: 'Syne', sans-serif; }
+  .db-page, .db-page * { box-sizing: border-box; }
+  .db-page { font-family: 'Syne', sans-serif; }
 
-  @keyframes sb-pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
-  .sb-pulse { animation: sb-pulse 2s ease-in-out infinite; }
+  @keyframes db-fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes db-pulse  { 0%,100%{opacity:1} 50%{opacity:.25} }
 
-  .sb-nav-link {
-    display: flex;
+  .db-anim-1 { animation: db-fadeUp .45s .04s both; }
+  .db-anim-2 { animation: db-fadeUp .45s .10s both; }
+  .db-anim-3 { animation: db-fadeUp .45s .16s both; }
+  .db-anim-4 { animation: db-fadeUp .45s .22s both; }
+
+  .db-pulse { animation: db-pulse 2s ease-in-out infinite; }
+
+  .db-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+  }
+  @media (max-width: 640px) {
+    .db-stats-grid { grid-template-columns: 1fr; }
+  }
+
+  .db-stat-card {
+    background: #111111;
+    border: 1px solid rgba(255,255,255,.07);
+    padding: 1.5rem;
+    transition: border-color .25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .db-stat-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0,255,135,.04);
+    opacity: 0;
+    transition: opacity .25s;
+  }
+  .db-stat-card:hover::before { opacity: 1; }
+  .db-stat-card:hover { border-color: rgba(0,255,135,.2) !important; }
+
+  .db-new-btn {
+    display: inline-flex;
     align-items: center;
-    gap: .65rem;
-    padding: .55rem .75rem;
-    border-radius: 5px;
-    font-size: .82rem;
-    font-weight: 600;
-    letter-spacing: -.01em;
-    color: rgba(245,245,245,.4);
-    text-decoration: none;
-    transition: color .2s, background .2s;
-    border: 1px solid transparent;
-  }
-  .sb-nav-link:hover {
-    color: rgba(245,245,245,.8);
-    background: rgba(255,255,255,.04);
-  }
-  .sb-nav-link.active {
-    color: #00FF87;
-    background: rgba(0,255,135,.07);
-    border-color: rgba(0,255,135,.15);
-  }
-
-  .sb-signout {
-    display: flex;
-    align-items: center;
-    gap: .6rem;
-    padding: .5rem .75rem;
-    border-radius: 5px;
-    background: none;
-    border: none;
-    width: 100%;
+    gap: .5rem;
+    background: #00FF87;
+    color: #0A0A0A;
     font-family: 'Syne', sans-serif;
-    font-size: .8rem;
-    font-weight: 500;
-    color: rgba(245,245,245,.3);
+    font-size: .82rem;
+    font-weight: 700;
+    padding: .55rem 1.2rem;
+    border: none;
+    border-radius: 4px;
     cursor: pointer;
-    transition: color .2s, background .2s;
-    text-align: left;
+    letter-spacing: .02em;
+    transition: background .2s, transform .15s, box-shadow .2s;
+    white-space: nowrap;
   }
-  .sb-signout:hover {
-    color: #f87171;
-    background: rgba(248,113,113,.07);
+  .db-new-btn:hover {
+    background: #00CC6E;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(0,255,135,.22);
+  }
+
+  .db-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
   }
 `;
 
-const navItems = [
-  {
-    to: '/app/dashboard',
-    label: 'Dashboard',
-    icon: (
-      <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-        <rect x="3" y="3" width="7" height="7" rx="1" />
-        <rect x="14" y="3" width="7" height="7" rx="1" />
-        <rect x="3" y="14" width="7" height="7" rx="1" />
-        <rect x="14" y="14" width="7" height="7" rx="1" />
-      </svg>
-    ),
-  },
-];
+export default function Dashboard() {
+  const { projects, loading, error, create, remove } = useProjects();
+  const [showCreate, setShowCreate] = useState(false);
+  const { toasts, addToast, removeToast } = useToast();
 
-export default function Sidebar({ onClose }) {
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
+  const totalChunks = projects.reduce((sum, p) => sum + (p.chunkCount || 0), 0);
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/login');
+  const handleCreate = async (payload) => {
+    await create(payload);
+    addToast('Project created successfully!', 'success');
   };
 
-  const G = '#00FF87';
-  const border = 'rgba(255,255,255,.06)';
+  const handleDelete = async (id) => {
+    await remove(id);
+    addToast('Project deleted', 'info');
+  };
+
+  const G      = '#00FF87';
+  const border = 'rgba(255,255,255,.07)';
+
+  const stats = [
+    {
+      label: 'Total Projects',
+      value: loading ? '—' : projects.length,
+      icon: (
+        <svg width="18" height="18" fill="none" stroke={G} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+          <path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+      ),
+    },
+    {
+      label: 'Total Chunks',
+      value: loading ? '—' : totalChunks,
+      icon: (
+        <svg width="18" height="18" fill="none" stroke={G} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+          <path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+        </svg>
+      ),
+    },
+    {
+      label: 'Widgets Deployed',
+      value: loading ? '—' : projects.length,
+      icon: (
+        <svg width="18" height="18" fill="none" stroke={G} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+          <path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+        </svg>
+      ),
+    },
+  ];
 
   return (
     <>
-      <style>{sidebarStyles}</style>
-      <aside
-        className="sb-wrap"
-        style={{
-          width: 220, height: '100%', background: '#0D0D0D',
-          borderRight: `1px solid ${border}`,
-          display: 'flex', flexDirection: 'column',
-        }}
-      >
-        {/* ── LOGO ── */}
-        <div style={{ height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.1rem', borderBottom: `1px solid ${border}`, flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '.45rem' }}>
-            <span className="sb-pulse" style={{ display: 'inline-block', width: 7, height: 7, background: G, borderRadius: '50%' }} />
-            <span style={{ fontWeight: 800, fontSize: '1rem', letterSpacing: '-.03em', color: '#f5f5f5' }}>Embedsy</span>
+      <style>{dashStyles}</style>
+
+      <div className="db-page" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: 1100 }}>
+
+        {/* PAGE TITLE */}
+        <div className="db-anim-1">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', marginBottom: '.5rem' }}>
+            <span className="db-pulse" style={{ display: 'inline-block', width: 7, height: 7, background: G, borderRadius: '50%' }} />
+            <span style={{ fontFamily: "'DM Mono',monospace", fontSize: '.68rem', letterSpacing: '.12em', textTransform: 'uppercase', color: G }}>Dashboard</span>
           </div>
-          {/* mobile close button */}
-          {onClose && (
-            <button
-              onClick={onClose}
-              style={{ background: 'none', border: 'none', color: 'rgba(245,245,245,.3)', cursor: 'pointer', padding: '.25rem', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              aria-label="Close sidebar"
-            >
-              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M18 6L6 18M6 6l12 12" />
-              </svg>
-            </button>
-          )}
+          <h1 style={{ fontSize: 'clamp(1.4rem,3vw,1.9rem)', fontWeight: 800, letterSpacing: '-.04em', color: '#f5f5f5', lineHeight: 1.1 }}>
+            Your Projects
+          </h1>
+          <p style={{ fontFamily: "'DM Mono',monospace", fontSize: '.72rem', color: 'rgba(245,245,245,.3)', marginTop: '.4rem', letterSpacing: '.03em' }}>
+            Manage widgets, upload documents and embed on any site
+          </p>
         </div>
 
-        {/* ── NAV ── */}
-        <nav style={{ flex: 1, padding: '.75rem .65rem', display: 'flex', flexDirection: 'column', gap: '.2rem', overflowY: 'auto' }}>
-          <p style={{ fontFamily: "'DM Mono',monospace", fontSize: '.58rem', letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(245,245,245,.2)', padding: '.4rem .75rem', marginBottom: '.15rem' }}>
-            Main
-          </p>
-          {navItems.map(item => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) => `sb-nav-link${isActive ? ' active' : ''}`}
-              onClick={onClose}
-            >
-              {item.icon}
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-
-        {/* ── USER FOOTER ── */}
-        <div style={{ padding: '.75rem .65rem', borderTop: `1px solid ${border}`, flexShrink: 0 }}>
-          {/* user row */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '.6rem', padding: '.5rem .75rem', marginBottom: '.25rem' }}>
-            <div style={{
-              width: 28, height: 28, borderRadius: '50%',
-              background: 'rgba(0,255,135,.12)', border: '1px solid rgba(0,255,135,.2)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-            }}>
-              <span style={{ fontFamily: "'Syne',sans-serif", fontSize: '.75rem', fontWeight: 800, color: G }}>
-                {user?.email?.[0]?.toUpperCase()}
-              </span>
-            </div>
-            <span style={{ fontFamily: "'DM Mono',monospace", fontSize: '.67rem', color: 'rgba(245,245,245,.35)', letterSpacing: '.02em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
-              {user?.email}
-            </span>
+        {/* STATS */}
+        <div className="db-anim-2">
+          <div className="db-stats-grid" style={{ border: `1px solid ${border}`, borderRadius: 8, overflow: 'hidden' }}>
+            {stats.map((s) => (
+              <div key={s.label} className="db-stat-card">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '.6rem', marginBottom: '1rem' }}>
+                  <div style={{
+                    width: 32, height: 32,
+                    background: 'rgba(0,255,135,.07)',
+                    border: '1px solid rgba(0,255,135,.15)',
+                    borderRadius: 6,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    flexShrink: 0,
+                  }}>
+                    {s.icon}
+                  </div>
+                  <span style={{ fontFamily: "'DM Mono',monospace", fontSize: '.65rem', letterSpacing: '.1em', textTransform: 'uppercase', color: 'rgba(245,245,245,.35)' }}>
+                    {s.label}
+                  </span>
+                </div>
+                <p style={{ fontSize: 'clamp(1.6rem,3vw,2.2rem)', fontWeight: 800, letterSpacing: '-.04em', color: '#f5f5f5', lineHeight: 1 }}>
+                  {s.value}
+                </p>
+              </div>
+            ))}
           </div>
+        </div>
 
-          <button className="sb-signout" onClick={handleSignOut}>
-            <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
-              <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        {/* HEADER ROW */}
+        <div className="db-header-row db-anim-3">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '.75rem' }}>
+            <h2 style={{ fontSize: '1rem', fontWeight: 700, letterSpacing: '-.03em', color: '#f5f5f5' }}>
+              All Projects
+            </h2>
+            {!loading && (
+              <span style={{
+                fontFamily: "'DM Mono',monospace", fontSize: '.62rem', letterSpacing: '.08em',
+                padding: '.15rem .55rem', borderRadius: 99,
+                background: 'rgba(255,255,255,.05)', border: `1px solid ${border}`,
+                color: 'rgba(245,245,245,.35)',
+              }}>
+                {projects.length}
+              </span>
+            )}
+          </div>
+          <button className="db-new-btn" onClick={() => setShowCreate(true)}>
+            <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path d="M12 4v16m8-8H4" />
             </svg>
-            Sign out
+            New Project
           </button>
         </div>
-      </aside>
+
+        {/* PROJECT LIST */}
+        <div className="db-anim-4">
+          <ProjectList projects={projects} loading={loading} error={error} onDelete={handleDelete} />
+        </div>
+
+      </div>
+
+      <CreateProject isOpen={showCreate} onClose={() => setShowCreate(false)} onCreate={handleCreate} />
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </>
   );
 }
-
 
 
 // import React, { useState } from 'react';
