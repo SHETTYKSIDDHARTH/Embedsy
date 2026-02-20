@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Layout from './components/layout/Layout';
-// import Landing from './pages/Landing';          // ← NEW
+import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 import ProjectDetail from './pages/ProjectDetail';
 import Upload from './pages/Upload';
@@ -33,7 +33,7 @@ function GuestRoute({ children }) {
       </div>
     );
   }
-  return !user ? children : <Navigate to="/dashboard" replace />;
+  return !user ? children : <Navigate to="/app/dashboard" replace />;
 }
 
 function AppRoutes() {

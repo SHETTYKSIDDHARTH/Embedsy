@@ -77,13 +77,9 @@
 //     </div>
 //   );
 // }
-
-
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import Input from '../components/common/Input';
-import Button from '../components/common/Button';
 
 const loginStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
@@ -114,7 +110,6 @@ const loginStyles = `
   .lg-btn   { animation:lg-fadeUp .55s .36s both; }
   .lg-foot  { animation:lg-fadeUp .55s .44s both; }
 
-  /* input overrides to match dark theme */
   .lg-input-wrap label {
     font-family:'DM Mono',monospace;
     font-size:.7rem;
@@ -163,16 +158,6 @@ const loginStyles = `
     box-shadow:0 10px 32px rgba(0,255,135,.22);
   }
   .lg-submit:disabled { opacity:.5; }
-
-  .lg-divider {
-    display:flex;align-items:center;gap:.75rem;
-    color:rgba(245,245,245,.18);
-    font-family:'DM Mono',monospace;
-    font-size:.68rem;letter-spacing:.08em;
-  }
-  .lg-divider::before,.lg-divider::after {
-    content:'';flex:1;height:1px;background:rgba(255,255,255,.07);
-  }
 `;
 
 export default function Login() {
@@ -221,7 +206,7 @@ export default function Login() {
     setLoading(true);
     try {
       await signIn(email, password);
-      navigate('/dashboard');
+      navigate('/app/dashboard');
     } catch (err) {
       setError(err.message || 'Login failed');
     } finally {
@@ -239,17 +224,12 @@ export default function Login() {
     >
       <style>{loginStyles}</style>
 
-      {/* cursors */}
       <div id="lg-cursor" ref={cursorRef} />
       <div id="lg-cursor-ring" ref={cursorRingRef} />
-
-      {/* grid bg */}
       <div className="lp-grid-bg" />
 
-      {/* glow blob */}
       <div style={{ position: 'fixed', width: 480, height: 480, background: 'radial-gradient(circle,rgba(0,255,135,.07) 0%,transparent 70%)', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', pointerEvents: 'none' }} />
 
-      {/* back to home */}
       <Link
         to="/"
         style={{ position: 'fixed', top: '1.8rem', left: '2rem', display: 'flex', alignItems: 'center', gap: '.45rem', textDecoration: 'none', color: 'rgba(245,245,245,.35)', fontFamily: "'DM Mono',monospace", fontSize: '.72rem', letterSpacing: '.06em', transition: 'color .2s', zIndex: 10 }}
@@ -260,10 +240,8 @@ export default function Login() {
         back
       </Link>
 
-      {/* card */}
       <div style={{ width: '100%', maxWidth: 400, position: 'relative', zIndex: 1 }}>
 
-        {/* logo */}
         <div className="lg-card" style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
           <a href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '.45rem', color: '#f5f5f5', fontWeight: 800, fontSize: '1.3rem', letterSpacing: '-.03em' }}>
             <span className="lg-pulse" style={{ display: 'inline-block', width: 8, height: 8, background: G, borderRadius: '50%' }} />
@@ -274,14 +252,12 @@ export default function Login() {
           </p>
         </div>
 
-        {/* form card */}
         <div
           className="lg-card"
           style={{ background: '#111111', border: `1px solid ${border}`, borderRadius: 10, padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}
         >
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
 
-            {/* email */}
             <div className="lg-input-wrap lg-field">
               <label>Email</label>
               <input
@@ -294,7 +270,6 @@ export default function Login() {
               />
             </div>
 
-            {/* password */}
             <div className="lg-input-wrap lg-field-2">
               <label>Password</label>
               <input
@@ -307,7 +282,6 @@ export default function Login() {
               />
             </div>
 
-            {/* error */}
             {error && (
               <div style={{ background: 'rgba(255,80,80,.07)', border: '1px solid rgba(255,80,80,.2)', borderRadius: 6, padding: '.65rem .9rem', display: 'flex', alignItems: 'center', gap: '.5rem' }}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -315,7 +289,6 @@ export default function Login() {
               </div>
             )}
 
-            {/* submit */}
             <div className="lg-btn">
               <button type="submit" className="lg-submit" disabled={loading}>
                 {loading ? (
@@ -330,7 +303,6 @@ export default function Login() {
           </form>
         </div>
 
-        {/* footer link */}
         <p className="lg-foot" style={{ textAlign: 'center', marginTop: '1.5rem', fontFamily: "'DM Mono',monospace", fontSize: '.72rem', letterSpacing: '.04em', color: 'rgba(245,245,245,.3)' }}>
           No account?{' '}
           <Link
@@ -345,7 +317,6 @@ export default function Login() {
 
       </div>
 
-      {/* spin keyframe */}
       <style>{`@keyframes spin { to { transform:rotate(360deg) } }`}</style>
     </div>
   );
